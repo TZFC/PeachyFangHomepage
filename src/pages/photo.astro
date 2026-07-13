@@ -1,0 +1,515 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Peachy Gallery | 桃牙画廊">
+  <div class="container">
+    <a href="/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Back to Home
+    </a>
+    
+    <div class="header">
+      <h1>Peachy Gallery 桃牙画廊</h1>
+      <p>Browse high-resolution snapshots. Click a photo to copy its PNG preview to clipboard or download the full resolution original.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-bar" placeholder="Filter by tags (e.g. full_body moon mountain)..." autocomplete="off" />
+      <button id="clear-search" class="clear-btn" style="display: none;">✕</button>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="gallery-wrapper">
+      <div id="gallery-grid" class="gallery-grid">
+        <div class="loading-spinner" id="loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading gallery...</p>
+        </div>
+      </div>
+      <div class="no-results" id="no-results" style="display: none;">
+        <span class="no-results-icon">🍑</span>
+        <p>No photos match your tag filter.</p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header h1 {
+    font-size: 2.5em;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary-color), var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+  .header p {
+    color: var(--text-muted);
+    font-size: 1.1em;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Search styling */
+  .search-container {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 2px 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: box-shadow 0.3s, border-color 0.3s;
+    z-index: 20;
+  }
+  .search-container:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 6px 20px rgba(255, 62, 114, 0.15);
+  }
+  .search-icon {
+    font-size: 1.2em;
+    margin-right: 10px;
+    opacity: 0.7;
+  }
+  #search-bar {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 12px 0;
+    font-size: 1.05em;
+    color: var(--text-color);
+    outline: none;
+    font-family: inherit;
+  }
+  #search-bar::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+  .clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+  }
+  .clear-btn:hover {
+    color: var(--primary-color);
+  }
+
+  /* Gallery Grid Layout */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    grid-auto-flow: dense;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 0;
+    color: var(--text-muted);
+  }
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--border-color);
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    margin: 0 auto 15px auto;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Photo Card & Pop-out */
+  .photo-card-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+  }
+
+  .photo-card-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(170, 114, 121, 0.05);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s, border-color 0.3s;
+    aspect-ratio: 3 / 4;
+    width: 100%;
+  }
+  .photo-card-wrapper.landscape {
+    aspect-ratio: 16 / 9;
+  }
+  
+  .photo-card-wrapper:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 25px rgba(255, 62, 114, 0.12);
+  }
+
+  .photo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: filter 0.3s ease, transform 0.3s ease;
+  }
+  
+  /* Tag overlay on hover */
+  .photo-tags-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(26,16,18,0.85) 0%, transparent 100%);
+    padding: 20px 15px 12px 15px;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .photo-card-wrapper:hover .photo-tags-overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .photo-tags-overlay .tag-span {
+    display: inline-block;
+    background: rgba(255, 62, 114, 0.25);
+    border: 1px solid var(--primary-color);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 0.75em;
+    margin: 2px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Selected Card Action Pop-out Overlay */
+  .photo-actions-popout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: rgba(241, 215, 220, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid var(--primary-color);
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    width: calc(100% - 40px);
+    max-width: 220px;
+    align-items: stretch;
+  }
+  
+  body.dark-mode .photo-actions-popout {
+    background: rgba(74, 44, 48, 0.95);
+  }
+
+  .photo-card-container.selected .photo-actions-popout {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: all;
+  }
+  
+  .photo-card-container.selected .photo-image {
+    filter: blur(5px) brightness(0.6);
+  }
+
+  .action-btn {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  
+  .action-btn.copy {
+    background: var(--primary-color);
+    color: white;
+  }
+  .action-btn.copy:hover {
+    background: var(--primary-hover);
+  }
+  
+  .action-btn.download {
+    background: var(--text-color);
+    color: var(--bg-color);
+  }
+  .action-btn.download:hover {
+    opacity: 0.9;
+  }
+
+  .action-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* No Results Screen */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+  .no-results-icon {
+    font-size: 4em;
+    display: block;
+    margin-bottom: 15px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @media (max-width: 480px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  let allPhotos: string[] = [];
+
+  const grid = document.getElementById('gallery-grid') as HTMLDivElement | null;
+  const spinner = document.getElementById('loading-spinner') as HTMLDivElement | null;
+  const searchInput = document.getElementById('search-bar') as HTMLInputElement | null;
+  const clearBtn = document.getElementById('clear-search') as HTMLButtonElement | null;
+  const noResults = document.getElementById('no-results') as HTMLDivElement | null;
+
+  // Load photos from API
+  async function loadPhotos() {
+    try {
+      const response = await fetch('/api/photos');
+      if (!response.ok) throw new Error("Failed to load photos");
+      allPhotos = response.ok ? await response.json() : [];
+      renderPhotos(allPhotos);
+    } catch (err) {
+      console.error(err);
+      if (spinner) {
+        spinner.innerHTML = `<p style="color:var(--primary-color);">Failed to load gallery. Please verify server status.</p>`;
+      }
+    }
+  }
+
+  function renderPhotos(photos: string[]) {
+    if (spinner) spinner.style.display = 'none';
+    if (!grid) return;
+    
+    // Clear old photo cards (preserving spinner if hidden)
+    const existingCards = grid.querySelectorAll('.photo-card-container');
+    existingCards.forEach(card => card.remove());
+
+    if (photos.length === 0) {
+      if (noResults) noResults.style.display = 'block';
+      return;
+    } else {
+      if (noResults) noResults.style.display = 'none';
+    }
+
+    photos.forEach((filename: string) => {
+      const isLandscape = filename.includes('landscape') || filename.includes('scene') || filename.includes('beach');
+      
+      const container = document.createElement('div');
+      container.className = 'photo-card-container';
+      container.dataset.filename = filename;
+
+      // Extract tags
+      const cleanName = filename.replace(/\.[^/.]+$/, "");
+      const tags = cleanName.split("-");
+      const tagSpans = tags.map((tag: string) => `<span class="tag-span">${tag}</span>`).join("");
+
+      container.innerHTML = `
+        <div class="photo-card-wrapper ${isLandscape ? 'landscape' : ''}">
+          <img src="/api/photo?key=${encodeURIComponent(filename)}&type=preview" alt="Preview of ${filename}" class="photo-image" loading="lazy" />
+          <div class="photo-tags-overlay">
+            ${tagSpans}
+          </div>
+        </div>
+        
+        <div class="photo-actions-popout">
+          <button class="action-btn copy" title="Copy preview as PNG to clipboard">
+            <span class="btn-icon">📋</span> Copy PNG
+          </button>
+          <a class="action-btn download" href="/api/photo?key=${encodeURIComponent(filename)}&type=full" download="${filename}" title="Download original photo">
+            <span class="btn-icon">💾</span> Download
+          </a>
+        </div>
+      `;
+
+      // Handle card selection / activation
+      const wrapper = container.querySelector('.photo-card-wrapper') as HTMLDivElement | null;
+      if (wrapper) {
+        wrapper.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const wasSelected = container.classList.contains('selected');
+          
+          // Remove selection from all other containers
+          document.querySelectorAll('.photo-card-container').forEach(c => {
+            c.classList.remove('selected');
+          });
+
+          if (!wasSelected) {
+            container.classList.add('selected');
+          }
+        });
+      }
+
+      // Handle copy to clipboard click
+      const copyBtn = container.querySelector('.action-btn.copy') as HTMLButtonElement | null;
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          copyBtn.disabled = true;
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = `<span class="btn-icon">⏳</span> Copying...`;
+
+          try {
+            // Fetch the preview image
+            const imageUrl = `/api/photo?key=${encodeURIComponent(filename)}&type=preview`;
+            const res = await fetch(imageUrl);
+            const blob = await res.blob();
+
+            // Create an image element to draw onto canvas
+            const img = new Image();
+            img.src = URL.createObjectURL(blob);
+            await new Promise((resolve, reject) => {
+              img.onload = resolve;
+              img.onerror = reject;
+            });
+
+            // Draw on canvas to get PNG format
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0);
+
+              canvas.toBlob(async (pngBlob) => {
+                if (!pngBlob) throw new Error("Canvas PNG generation failed");
+                try {
+                  await navigator.clipboard.write([
+                    new ClipboardItem({
+                      'image/png': pngBlob
+                    })
+                  ]);
+                  copyBtn.innerHTML = `<span class="btn-icon">✅</span> Copied!`;
+                  setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.disabled = false;
+                    container.classList.remove('selected');
+                  }, 2000);
+                } catch (err) {
+                  console.error("Clipboard API write failed:", err);
+                  copyBtn.innerHTML = `<span class="btn-icon">❌</span> Failed`;
+                  setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.disabled = false;
+                  }, 2000);
+                }
+              }, 'image/png');
+            } else {
+              throw new Error("Could not get 2D context");
+            }
+
+          } catch (err) {
+            console.error("Error loading/copying photo:", err);
+            copyBtn.innerHTML = `<span class="btn-icon">❌</span> Error`;
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+              copyBtn.disabled = false;
+            }, 2000);
+          }
+        });
+      }
+
+      grid.appendChild(container);
+    });
+  }
+
+  // Filter photos based on tags in search bar
+  function filterPhotos() {
+    if (!searchInput) return;
+    const query = searchInput.value.trim().toLowerCase();
+    
+    if (query === "") {
+      if (clearBtn) clearBtn.style.display = 'none';
+      renderPhotos(allPhotos);
+      return;
+    }
+
+    if (clearBtn) clearBtn.style.display = 'block';
+    const terms = query.split(/\s+/).filter(t => t.length > 0);
+
+    const filtered = allPhotos.filter((filename: string) => {
+      const cleanName = filename.toLowerCase().replace(/\.[^/.]+$/, "");
+      const tags = cleanName.split("-");
+      return terms.every(term => {
+        return tags.some(tag => tag.includes(term) || term.includes(tag));
+      });
+    });
+
+    renderPhotos(filtered);
+  }
+
+  // Global click handler to dismiss selection when clicking outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.photo-card-container').forEach(c => {
+      c.classList.remove('selected');
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', filterPhotos);
+  }
+  
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = "";
+      filterPhotos();
+    });
+  }
+
+  // Start initialization
+  loadPhotos();
+</script>

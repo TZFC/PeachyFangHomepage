@@ -1,0 +1,50 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Peachy Gallery | 桃牙画廊</title><meta name="description" content="Welcome to PeachyFang's Hub. Gallery of high resolution photos, AR camera, Bilibili livestream and more!"><meta name="keywords" content="PeachyFang, Bilibili, Vtuber, Photo, Gallery, AR Camera, Selfie, filter, R2, Cloudflare"><meta property="og:title" content="Peachy Gallery | 桃牙画廊"><meta property="og:description" content="Welcome to PeachyFang's Hub. Gallery of high resolution photos, AR camera, Bilibili livestream and more!"><meta property="og:type" content="website"><meta property="og:url" content="https://peachyfang.muxiaokongh.com/photo/"><link rel="canonical" href="https://peachyfang.muxiaokongh.com/photo/"><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"><meta name="theme-color" content="#ff3e72"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"PeachyFang","alternateName":["桃牙芳","Peachy","Fang"],"description":"Welcome to PeachyFang's Hub. Gallery of high resolution photos, AR camera, Bilibili livestream and more!","url":"https://peachyfang.muxiaokongh.com","sameAs":["https://live.bilibili.com/23596840"],"knowsLanguage":["zh-CN","en-US"]}</script><link rel="stylesheet" href="/_astro/Layout.DUdhvQ8s.css"><link rel="stylesheet" href="/_astro/photo.q4JMqy31.css"></head> <body> <div class="bg-image"></div> <div class="center-blur-mask"> <div class="blur-effect-core"></div> </div> <div class="top-bar"> <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode">🌙</button> </div>  <div class="container" data-astro-cid-r7dbfkg3> <a href="/" class="back-btn" data-astro-cid-r7dbfkg3> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-r7dbfkg3><line x1="19" y1="12" x2="5" y2="12" data-astro-cid-r7dbfkg3></line><polyline points="12 19 5 12 12 5" data-astro-cid-r7dbfkg3></polyline></svg>
+Back to Home
+</a> <div class="header" data-astro-cid-r7dbfkg3> <h1 data-astro-cid-r7dbfkg3>Peachy Gallery 桃牙画廊</h1> <p data-astro-cid-r7dbfkg3>Browse high-resolution snapshots. Click a photo to copy its PNG preview to clipboard or download the full resolution original.</p> </div> <!-- Search Bar --> <div class="search-container" data-astro-cid-r7dbfkg3> <span class="search-icon" data-astro-cid-r7dbfkg3>🔍</span> <input type="text" id="search-bar" placeholder="Filter by tags (e.g. full_body moon mountain)..." autocomplete="off" data-astro-cid-r7dbfkg3> <button id="clear-search" class="clear-btn" style="display: none;" data-astro-cid-r7dbfkg3>✕</button> </div> <!-- Gallery Grid --> <div class="gallery-wrapper" data-astro-cid-r7dbfkg3> <div id="gallery-grid" class="gallery-grid" data-astro-cid-r7dbfkg3> <div class="loading-spinner" id="loading-spinner" data-astro-cid-r7dbfkg3> <div class="spinner" data-astro-cid-r7dbfkg3></div> <p data-astro-cid-r7dbfkg3>Loading gallery...</p> </div> </div> <div class="no-results" id="no-results" style="display: none;" data-astro-cid-r7dbfkg3> <span class="no-results-icon" data-astro-cid-r7dbfkg3>🍑</span> <p data-astro-cid-r7dbfkg3>No photos match your tag filter.</p> </div> </div> </div>  <div class="footer"> <strong>PeachyFang © 2026</strong><br> <span>Hosted at peachyfang.muxiaokongh.com | Developed with ❤️</span> </div> <script>
+        // --- Theme Management ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('siteTheme');
+        
+        let isDark;
+        if (savedTheme) {
+            isDark = savedTheme === 'dark';
+        } else {
+            isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        
+        function applyTheme() {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                if (themeToggleBtn) themeToggleBtn.innerText = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (themeToggleBtn) themeToggleBtn.innerText = '🌙';
+            }
+        }
+
+        applyTheme();
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                isDark = !isDark;
+                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+                applyTheme();
+            });
+        }
+    </script> </body> </html>  <script type="module">globalThis.process??={};globalThis.process.env??={};let g=[];const v=document.getElementById("gallery-grid"),m=document.getElementById("loading-spinner"),r=document.getElementById("search-bar"),s=document.getElementById("clear-search"),h=document.getElementById("no-results");async function k(){try{const o=await fetch("/api/photos");if(!o.ok)throw new Error("Failed to load photos");g=o.ok?await o.json():[],b(g)}catch(o){console.error(o),m&&(m.innerHTML='<p style="color:var(--primary-color);">Failed to load gallery. Please verify server status.</p>')}}function b(o){if(m&&(m.style.display="none"),!v)return;if(v.querySelectorAll(".photo-card-container").forEach(e=>e.remove()),o.length===0){h&&(h.style.display="block");return}else h&&(h.style.display="none");o.forEach(e=>{const c=e.includes("landscape")||e.includes("scene")||e.includes("beach"),n=document.createElement("div");n.className="photo-card-container",n.dataset.filename=e;const p=e.replace(/\.[^/.]+$/,"").split("-").map(i=>`<span class="tag-span">${i}</span>`).join("");n.innerHTML=`
+        <div class="photo-card-wrapper ${c?"landscape":""}">
+          <img src="/api/photo?key=${encodeURIComponent(e)}&type=preview" alt="Preview of ${e}" class="photo-image" loading="lazy" />
+          <div class="photo-tags-overlay">
+            ${p}
+          </div>
+        </div>
+        
+        <div class="photo-actions-popout">
+          <button class="action-btn copy" title="Copy preview as PNG to clipboard">
+            <span class="btn-icon">📋</span> Copy PNG
+          </button>
+          <a class="action-btn download" href="/api/photo?key=${encodeURIComponent(e)}&type=full" download="${e}" title="Download original photo">
+            <span class="btn-icon">💾</span> Download
+          </a>
+        </div>
+      `;const C=n.querySelector(".photo-card-wrapper");C&&C.addEventListener("click",i=>{i.stopPropagation();const l=n.classList.contains("selected");document.querySelectorAll(".photo-card-container").forEach(d=>{d.classList.remove("selected")}),l||n.classList.add("selected")});const t=n.querySelector(".action-btn.copy");t&&t.addEventListener("click",async i=>{i.stopPropagation(),t.disabled=!0;const l=t.innerHTML;t.innerHTML='<span class="btn-icon">⏳</span> Copying...';try{const d=`/api/photo?key=${encodeURIComponent(e)}&type=preview`,P=await(await fetch(d)).blob(),a=new Image;a.src=URL.createObjectURL(P),await new Promise((y,w)=>{a.onload=y,a.onerror=w});const u=document.createElement("canvas");u.width=a.naturalWidth,u.height=a.naturalHeight;const T=u.getContext("2d");if(T)T.drawImage(a,0,0),u.toBlob(async y=>{if(!y)throw new Error("Canvas PNG generation failed");try{await navigator.clipboard.write([new ClipboardItem({"image/png":y})]),t.innerHTML='<span class="btn-icon">✅</span> Copied!',setTimeout(()=>{t.innerHTML=l,t.disabled=!1,n.classList.remove("selected")},2e3)}catch(w){console.error("Clipboard API write failed:",w),t.innerHTML='<span class="btn-icon">❌</span> Failed',setTimeout(()=>{t.innerHTML=l,t.disabled=!1},2e3)}},"image/png");else throw new Error("Could not get 2D context")}catch(d){console.error("Error loading/copying photo:",d),t.innerHTML='<span class="btn-icon">❌</span> Error',setTimeout(()=>{t.innerHTML=l,t.disabled=!1},2e3)}}),v.appendChild(n)})}function I(){if(!r)return;const o=r.value.trim().toLowerCase();if(o===""){s&&(s.style.display="none"),b(g);return}s&&(s.style.display="block");const L=o.split(/\s+/).filter(c=>c.length>0),e=g.filter(c=>{const E=c.toLowerCase().replace(/\.[^/.]+$/,"").split("-");return L.every(f=>E.some(p=>p.includes(f)||f.includes(p)))});b(e)}document.addEventListener("click",()=>{document.querySelectorAll(".photo-card-container").forEach(o=>{o.classList.remove("selected")})});r&&r.addEventListener("input",I);s&&s.addEventListener("click",()=>{r&&(r.value=""),I()});k();</script>

@@ -1,0 +1,17 @@
+<svg width="1252" height="1890" viewBox="0 0 1252 1890" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Peachy Frame Border -->
+  <rect x="30" y="30" width="1192" height="1830" rx="40" fill="none" stroke="#ff3e72" stroke-width="12" opacity="0.8" />
+  <rect x="50" y="50" width="1152" height="1790" rx="30" fill="none" stroke="#fd9594" stroke-width="6" opacity="0.5" />
+  
+  <!-- Peach Emoji Corners -->
+  <text x="80" y="130" font-size="70">🍑</text>
+  <text x="1100" y="130" font-size="70">🍑</text>
+  <text x="80" y="1790" font-size="70">🍑</text>
+  <text x="1100" y="1790" font-size="70">🍑</text>
+  
+  <!-- Sweet Text overlay at bottom -->
+  <rect x="376" y="1710" width="500" height="90" rx="25" fill="#f1d7dc" stroke="#ff3e72" stroke-width="4" />
+  <text x="50%" y="1762" dominant-baseline="middle" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="900" font-size="36" fill="#4a3134">
+    PEACHY VIBES 🍑
+  </text>
+</svg>

@@ -1,0 +1,114 @@
+---
+import '../styles/base.css';
+import '../styles/components.css';
+
+interface Props {
+	title: string;
+	description?: string;
+	keywords?: string;
+}
+
+const { title, description, keywords } = Astro.props;
+
+const finalDesc = description || "Welcome to PeachyFang's Hub. Gallery of high resolution photos, AR camera, Bilibili livestream and more!";
+const finalKeywords = keywords || "PeachyFang, Bilibili, Vtuber, Photo, Gallery, AR Camera, Selfie, filter, R2, Cloudflare";
+const siteUrl = "https://peachyfang.muxiaokongh.com";
+const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+
+const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "PeachyFang",
+    "alternateName": ["桃牙芳", "Peachy", "Fang"],
+    "description": finalDesc,
+    "url": siteUrl,
+    "sameAs": [
+        "https://live.bilibili.com/23596840", // Using MXK as placeholder or direct stream
+    ],
+    "knowsLanguage": ["zh-CN", "en-US"]
+};
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <meta name="description" content={finalDesc} />
+    <meta name="keywords" content={finalKeywords} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={finalDesc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <meta name="theme-color" content="#ff3e72" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schemaMarkup)} />
+    <style is:global>
+        @media (display-mode: standalone) {
+            .top-bar, .footer {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+    <div class="center-blur-mask">
+        <div class="blur-effect-core"></div>
+    </div>
+    
+    <div class="top-bar">
+        <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode">🌙</button>
+    </div>
+
+    <slot />
+
+    <div class="footer">
+        <strong>PeachyFang © 2026</strong><br>
+        <span>Hosted at peachyfang.muxiaokongh.com | Developed with ❤️</span>
+    </div>
+
+    <script is:inline>
+        // --- Theme Management ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('siteTheme');
+        
+        let isDark;
+        if (savedTheme) {
+            isDark = savedTheme === 'dark';
+        } else {
+            isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        
+        function applyTheme() {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                if (themeToggleBtn) themeToggleBtn.innerText = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (themeToggleBtn) themeToggleBtn.innerText = '🌙';
+            }
+        }
+
+        applyTheme();
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                isDark = !isDark;
+                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+                applyTheme();
+            });
+        }
+    </script>
+</body>
+</html>
