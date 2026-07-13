@@ -1,4 +1,6 @@
 import type { APIRoute } from 'astro';
+// @ts-ignore
+import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
@@ -6,7 +8,6 @@ export const GET: APIRoute = async (context) => {
   const { searchParams } = new URL(context.request.url);
   const fileName = searchParams.get('file');
 
-  const env = (context.locals as any).runtime?.env;
   const emoticonsStore = env?.peachy_emoticons_store;
 
   if (!emoticonsStore) {

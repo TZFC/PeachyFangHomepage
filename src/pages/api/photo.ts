@@ -1,4 +1,6 @@
 import type { APIRoute } from 'astro';
+// @ts-ignore
+import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
@@ -14,7 +16,6 @@ export const GET: APIRoute = async (context) => {
     });
   }
 
-  const env = (context.locals as any).runtime?.env;
   const previewStore = env?.peachy_preview_store;
   const fullStore = env?.peachy_full_store;
 

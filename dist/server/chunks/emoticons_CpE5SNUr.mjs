@@ -1,10 +1,10 @@
 globalThis.process ??= {};
 globalThis.process.env ??= {};
+import { env } from "cloudflare:workers";
 const prerender = false;
 const GET = async (context) => {
   const { searchParams } = new URL(context.request.url);
   const fileName = searchParams.get("file");
-  const env = context.locals.runtime?.env;
   const emoticonsStore = env?.peachy_emoticons_store;
   if (!emoticonsStore) {
     if (fileName) {

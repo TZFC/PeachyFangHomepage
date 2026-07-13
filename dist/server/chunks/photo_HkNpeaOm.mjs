@@ -1,5 +1,6 @@
 globalThis.process ??= {};
 globalThis.process.env ??= {};
+import { env } from "cloudflare:workers";
 const prerender = false;
 const GET = async (context) => {
   const { searchParams } = new URL(context.request.url);
@@ -11,7 +12,6 @@ const GET = async (context) => {
       headers: { "Content-Type": "application/json" }
     });
   }
-  const env = context.locals.runtime?.env;
   const previewStore = env?.peachy_preview_store;
   const fullStore = env?.peachy_full_store;
   const bucket = type === "full" ? fullStore : previewStore;

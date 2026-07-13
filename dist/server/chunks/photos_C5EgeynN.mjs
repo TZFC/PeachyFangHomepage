@@ -1,8 +1,8 @@
 globalThis.process ??= {};
 globalThis.process.env ??= {};
+import { env } from "cloudflare:workers";
 const prerender = false;
-const GET = async (context) => {
-  const env = context.locals.runtime?.env;
+const GET = async () => {
   const previewStore = env?.peachy_preview_store;
   if (!previewStore) {
     const mockPhotos = [
