@@ -63,8 +63,8 @@ const translate = useTranslations(lang);
 
   .emoticons-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
     margin-top: 20px;
   }
 
@@ -90,15 +90,15 @@ const translate = useTranslations(lang);
 
   .emoticon-card {
     background: var(--card-bg);
-    border-radius: 16px;
-    padding: 15px;
+    border-radius: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--border-color);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.2s ease-in-out;
     position: relative;
     box-shadow: 0 4px 12px rgba(170, 114, 121, 0.05);
     backdrop-filter: blur(10px);
@@ -106,8 +106,8 @@ const translate = useTranslations(lang);
   }
 
   .emoticon-card:hover {
-    transform: translateY(-5px) scale(1.03);
-    box-shadow: 0 8px 24px rgba(255, 62, 114, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(255, 62, 114, 0.15);
     border-color: var(--primary-color);
     background: var(--hover-bg);
   }
@@ -115,20 +115,15 @@ const translate = useTranslations(lang);
   .emoticon-card img {
     width: 100%;
     max-width: 100px;
-    height: auto;
+    aspect-ratio: 1 / 1;
     object-fit: contain;
     border-radius: 8px;
-    transition: transform 0.2s;
-  }
-  .emoticon-card:hover img {
-    transform: scale(1.1);
   }
 
   .emoticon-card .emoticon-name {
-    margin-top: 10px;
-    font-size: 0.85em;
-    font-weight: 700;
-    color: var(--text-color);
+    margin-top: 8px;
+    font-size: 0.8em;
+    color: var(--text-muted);
     text-align: center;
     word-break: break-all;
   }
