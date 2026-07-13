@@ -1,28 +1,44 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'zh' } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const translate = useTranslations(lang);
 ---
 
-<Layout title="Peachy Emoticons | 桃牙表情包">
+<Layout title={`${translate('emoticonsTitle')} | ${translate('title')}`}>
     <div class="container">
-        <a href="/" class="back-btn">
+        <a href={`/${lang}/`} class="back-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Back to Home
+            {translate('backBtn')}
         </a>
 
         <div class="header">
-            <h1>Peachy Emoticons 桃牙表情包</h1>
-            <p>Click on any emoticon sticker to copy it directly to your clipboard. Ready to use in chat!</p>
+            <h1>{translate('emoticonsTitle')}</h1>
+            <p>{translate('emoticonsDesc')}</p>
         </div>
 
-        <div id="emoticons-container" class="emoticons-grid">
+        <div id="emoticons-container" class="emoticons-grid"
+             data-failed={lang === 'zh' ? '加载表情包失败，请检查 R2 绑定设置。' : 'Failed to load emoticons. Please verify R2 settings.'}
+             data-empty={lang === 'zh' ? '未在 R2 存储桶中找到表情包。' : 'No emoticons found in R2.'}
+        >
             <div class="loading-spinner">
                 <div class="spinner"></div>
-                <p>Loading emoticons...</p>
+                <p>{translate('loading')}</p>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="toast">Copied to clipboard!</div>
+    <div id="toast" class="toast" data-success={translate('copySuccess')} data-linkcopied={translate('linkCopied')}>
+        {translate('copySuccess')}
+    </div>
 </Layout>
 
 <style>
@@ -164,7 +180,8 @@ import Layout from '../layouts/Layout.astro';
 
             container.innerHTML = '';
             if (emoticons.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No emoticons found in R2.</div>`;
+                const emptyText = container.dataset.empty || "No emoticons found.";
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">${emptyText}</div>`;
                 return;
             }
 
@@ -190,7 +207,6 @@ import Layout from '../layouts/Layout.astro';
                             try {
                                 let copyBlob = blob;
                                 
-                                // SVG conversion to PNG for clipboard compatibility (useful for local dev mock SVGs)
                                 if (blob.type === 'image/svg+xml' || emo.url.includes('.svg')) {
                                     const img = new Image();
                                     img.src = URL.createObjectURL(blob);
@@ -214,7 +230,8 @@ import Layout from '../layouts/Layout.astro';
                                 await navigator.clipboard.write(data);
 
                                 if (toast) {
-                                    toast.innerText = 'Copied to clipboard!';
+                                    const successText = toast.dataset.success || 'Copied to clipboard!';
+                                    toast.innerText = successText;
                                     toast.classList.add('show');
                                     setTimeout(() => toast.classList.remove('show'), 2000);
                                 }
@@ -227,7 +244,8 @@ import Layout from '../layouts/Layout.astro';
                         // Fallback to copying URL text
                         await navigator.clipboard.writeText(window.location.origin + emo.url);
                         if (toast) {
-                            toast.innerText = 'Link copied!';
+                            const linkCopiedText = toast.dataset.linkcopied || 'Link copied!';
+                            toast.innerText = linkCopiedText;
                             toast.classList.add('show');
                             setTimeout(() => toast.classList.remove('show'), 2000);
                         }
@@ -240,11 +258,11 @@ import Layout from '../layouts/Layout.astro';
                 container.appendChild(card);
             });
         } catch (err) {
-            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--primary-color);">Failed to load emoticons. Please verify R2 settings.</div>`;
+            const failedText = container.dataset.failed || "Failed to load emoticons.";
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--primary-color);">${failedText}</div>`;
             console.error(err);
         }
     }
 
-    // Initialize
     fetchEmoticons();
 </script>

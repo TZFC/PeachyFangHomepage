@@ -1,7 +1,19 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
 
-// Define static overlay filters to ensure compatibility with Cloudflare Pages serverless runtime
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'zh' } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const translate = useTranslations(lang);
+
+// Define static overlay filters
 const filters = [
   '/selfie_filter/selfie_peach_frame.svg',
   '/selfie_filter/selfie_cute_hearts.svg'
@@ -9,27 +21,35 @@ const filters = [
 const initialFilter = filters[0] || '';
 ---
 
-<Layout title="AR Camera | Peachy Cam">
+<Layout title={`${translate('selfieTitle')} | ${translate('title')}`}>
     <div class="container">
-        <a href="/" class="back-btn">
+        <a href={`/${lang}/`} class="back-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Back to Home
+            {translate('backBtn')}
         </a>
         
         <div class="header">
-            <h1>AR Camera 桃牙相机</h1>
-            <p>Smile! Swipe or use the arrow buttons to switch overlays, then press the shutter button to take a photo.</p>
+            <h1>{translate('selfieTitle')}</h1>
+            <p>{translate('selfieDesc')}</p>
         </div>
 
         <div class="camera-selection-container">
-            <label for="camera-select">Select Camera Device</label>
+            <label for="camera-select">{translate('selectCamera')}</label>
             <select id="camera-select" class="camera-select">
-                <option value="">Default Camera</option>
+                <option value="">{lang === 'zh' ? '默认摄像头' : 'Default Camera'}</option>
             </select>
         </div>
 
         <div class="selfie-container">
-            <div class="camera-wrapper" id="camera-container" data-filters={JSON.stringify(filters)}>
+            <div class="camera-wrapper" id="camera-container" 
+                 data-filters={JSON.stringify(filters)}
+                 data-denied={translate('cameraAccessDenied')}
+                 data-notready={translate('cameraNotReady')}
+                 data-requesting={lang === 'zh' ? '正在请求摄像头权限...' : 'Requesting camera access...'}
+                 data-defaultcam={lang === 'zh' ? '默认摄像头' : 'Default Camera'}
+                 data-camerasuffix={lang === 'zh' ? '号摄像头' : 'Camera'}
+                 data-sharetitle={lang === 'zh' ? '我的合影' : 'My Selfie'}
+            >
                 <video id="video" autoplay playsinline muted></video>
                 <canvas id="canvas"></canvas>
                 <img id="overlay" src={initialFilter} alt="AR Overlay" />
@@ -38,7 +58,7 @@ const initialFilter = filters[0] || '';
 
                 <div class="swipe-hint">
                     <span class="swipe-arrow">→</span>
-                    <span>Swipe or click arrows to switch filter</span>
+                    <span>{translate('swipeTip')}</span>
                 </div>
 
                 <div class="camera-controls">
@@ -66,13 +86,13 @@ const initialFilter = filters[0] || '';
     <!-- Capture Modal -->
     <div id="capture-modal" class="modal-overlay">
         <div class="modal-content selfie-modal">
-            <h2>Captured Photo</h2>
+            <h2>{lang === 'zh' ? '合影照片' : 'Captured Photo'}</h2>
             <div class="modal-image-container">
                 <img id="modal-preview" src="" alt="Captured Photo" />
             </div>
             <div class="modal-buttons" style="margin-top: 15px;">
-                <button id="modal-download" class="btn">Download PNG</button>
-                <button id="modal-retake" class="btn secondary">Retake</button>
+                <button id="modal-download" class="btn">{translate('downloadBtn')}</button>
+                <button id="modal-retake" class="btn secondary">{translate('retakeBtn')}</button>
             </div>
         </div>
     </div>
@@ -450,7 +470,8 @@ const initialFilter = filters[0] || '';
     let currentStream: MediaStream | null = null;
 
     async function initCamera(deviceId: string | null = null) {
-        if (statusMsg) statusMsg.textContent = "Requesting camera access...";
+        const requestingText = cameraContainer?.dataset.requesting || "Requesting camera access...";
+        if (statusMsg) statusMsg.textContent = requestingText;
         
         if (currentStream) {
             currentStream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
@@ -461,7 +482,7 @@ const initialFilter = filters[0] || '';
                 width: { ideal: 1280 }, 
                 height: { ideal: 720 },
                 deviceId: deviceId ? { exact: deviceId } : undefined,
-                facingMode: deviceId ? undefined : 'user'
+                facingMode: deviceId ? undefined : 'user' // Default to selfie front camera
             },
             audio: false
         };
@@ -490,7 +511,8 @@ const initialFilter = filters[0] || '';
             await getCameras();
         } catch (err) {
             console.error("Camera access denied or error:", err);
-            if (statusMsg) statusMsg.textContent = "Camera access denied. Please ensure you are on HTTPS/localhost and have granted permissions.";
+            const deniedText = cameraContainer?.dataset.denied || "Camera access denied.";
+            if (statusMsg) statusMsg.textContent = deniedText;
         }
     }
 
@@ -506,7 +528,8 @@ const initialFilter = filters[0] || '';
             videoDevices.forEach(device => {
                 const option = document.createElement('option');
                 option.value = device.deviceId;
-                option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+                const cameraSuffix = cameraContainer?.dataset.camerasuffix || "Camera";
+                option.text = device.label || `${cameraSuffix} ${cameraSelect.length + 1}`;
                 cameraSelect.appendChild(option);
             });
 
@@ -553,18 +576,19 @@ const initialFilter = filters[0] || '';
     }
 
     function downloadImage(dataUrl: string, filename?: string) {
-        const actualFilename = filename || `peachy_selfie_${Date.now()}.png`;
+        filename = filename || `peachy_selfie_${Date.now()}.png`;
         const nav = navigator as any;
+        const shareTitle = cameraContainer?.dataset.sharetitle || "Peachy Selfie";
 
         if (nav.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
             fetch(dataUrl)
                 .then(res => res.blob())
                 .then(blob => {
-                    const file = new File([blob], actualFilename, { type: 'image/png' });
+                    const file = new File([blob], filename || 'selfie.png', { type: 'image/png' });
                     if (nav.canShare && nav.canShare({ files: [file] })) {
                         return nav.share({
                             files: [file],
-                            title: 'Peachy Selfie'
+                            title: shareTitle
                         });
                     } else {
                         throw new Error("Cannot share");
@@ -572,10 +596,10 @@ const initialFilter = filters[0] || '';
                 })
                 .catch(err => {
                     console.error('Share failed, falling back to download link:', err);
-                    fallbackDownload(dataUrl, actualFilename);
+                    fallbackDownload(dataUrl, filename || 'selfie.png');
                 });
         } else {
-            fallbackDownload(dataUrl, actualFilename);
+            fallbackDownload(dataUrl, filename);
         }
     }
 
@@ -588,10 +612,12 @@ const initialFilter = filters[0] || '';
         document.body.removeChild(link);
     }
 
+    // Capture photo
     if (captureBtn && video && canvas) {
         captureBtn.addEventListener('click', () => {
             if (!video.videoWidth || !video.videoHeight) {
-                if (statusMsg) statusMsg.textContent = "Camera stream not ready yet.";
+                const notReadyText = cameraContainer?.dataset.notready || "Camera stream not ready yet.";
+                if (statusMsg) statusMsg.textContent = notReadyText;
                 return;
             }
 

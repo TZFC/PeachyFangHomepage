@@ -1,39 +1,57 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'zh' } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const translate = useTranslations(lang);
 ---
 
-<Layout title="Peachy Gallery | 桃牙画廊">
+<Layout title={`${translate('photoTitle')} | ${translate('title')}`}>
   <div class="container">
-    <a href="/" class="back-btn">
+    <a href={`/${lang}/`} class="back-btn">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-      Back to Home
+      {translate('backBtn')}
     </a>
     
     <div class="header">
-      <h1>Peachy Gallery 桃牙画廊</h1>
-      <p>Browse high-resolution snapshots. Click a photo to copy its PNG preview to clipboard or download the full resolution original.</p>
+      <h1>{translate('photoTitle')}</h1>
+      <p>{translate('photoDesc')}</p>
     </div>
 
     <!-- Search Bar -->
     <div class="search-container">
       <span class="search-icon">🔍</span>
-      <input type="text" id="search-bar" placeholder="Filter by tags (e.g. full_body moon mountain)..." autocomplete="off" />
+      <input type="text" id="search-bar" placeholder={translate('searchPlaceholder')} autocomplete="off" />
       <button id="clear-search" class="clear-btn" style="display: none;">✕</button>
     </div>
 
     <!-- Gallery Grid -->
     <div class="gallery-wrapper">
-      <div id="gallery-grid" class="gallery-grid">
+      <div id="gallery-grid" class="gallery-grid" 
+           data-labelcopy={lang === 'zh' ? '复制 PNG' : 'Copy PNG'} 
+           data-labeldownload={lang === 'zh' ? '下载' : 'Download'}
+           data-failed={lang === 'zh' ? '加载画廊失败，请检查服务器状态。' : 'Failed to load gallery. Please verify server status.'}>
         <div class="loading-spinner" id="loading-spinner">
           <div class="spinner"></div>
-          <p>Loading gallery...</p>
+          <p>{translate('loading')}</p>
         </div>
       </div>
       <div class="no-results" id="no-results" style="display: none;">
         <span class="no-results-icon">🍑</span>
-        <p>No photos match your tag filter.</p>
+        <p>{translate('noItems')}</p>
       </div>
     </div>
+  </div>
+
+  <div id="toast" class="toast" data-success={translate('copySuccess')} data-linkcopied={translate('linkCopied')}>
+    {translate('copySuccess')}
   </div>
 </Layout>
 
@@ -300,6 +318,32 @@ import Layout from '../layouts/Layout.astro';
     50% { transform: translateY(-10px); }
   }
 
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--primary-color);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    box-shadow: 0 6px 20px rgba(255, 62, 114, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: 700;
+    font-size: 0.95em;
+    letter-spacing: 0.5px;
+  }
+
+  .toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
   @media (max-width: 480px) {
     .gallery-grid {
       grid-template-columns: 1fr;
@@ -315,6 +359,7 @@ import Layout from '../layouts/Layout.astro';
   const searchInput = document.getElementById('search-bar') as HTMLInputElement | null;
   const clearBtn = document.getElementById('clear-search') as HTMLButtonElement | null;
   const noResults = document.getElementById('no-results') as HTMLDivElement | null;
+  const toast = document.getElementById('toast') as HTMLDivElement | null;
 
   // Load photos from API
   async function loadPhotos() {
@@ -325,8 +370,9 @@ import Layout from '../layouts/Layout.astro';
       renderPhotos(allPhotos);
     } catch (err) {
       console.error(err);
-      if (spinner) {
-        spinner.innerHTML = `<p style="color:var(--primary-color);">Failed to load gallery. Please verify server status.</p>`;
+      if (spinner && grid) {
+        const errorMsg = grid.dataset.failed || "Failed to load gallery.";
+        spinner.innerHTML = `<p style="color:var(--primary-color);">${errorMsg}</p>`;
       }
     }
   }
@@ -345,6 +391,9 @@ import Layout from '../layouts/Layout.astro';
     } else {
       if (noResults) noResults.style.display = 'none';
     }
+
+    const labelCopy = grid.dataset.labelcopy || "Copy PNG";
+    const labelDownload = grid.dataset.labeldownload || "Download";
 
     photos.forEach((filename: string) => {
       const isLandscape = filename.includes('landscape') || filename.includes('scene') || filename.includes('beach');
@@ -368,10 +417,10 @@ import Layout from '../layouts/Layout.astro';
         
         <div class="photo-actions-popout">
           <button class="action-btn copy" title="Copy preview as PNG to clipboard">
-            <span class="btn-icon">📋</span> Copy PNG
+            <span class="btn-icon">📋</span> ${labelCopy}
           </button>
           <a class="action-btn download" href="/api/photo?key=${encodeURIComponent(filename)}&type=full" download="${filename}" title="Download original photo">
-            <span class="btn-icon">💾</span> Download
+            <span class="btn-icon">💾</span> ${labelDownload}
           </a>
         </div>
       `;
@@ -401,15 +450,13 @@ import Layout from '../layouts/Layout.astro';
           e.stopPropagation();
           copyBtn.disabled = true;
           const originalText = copyBtn.innerHTML;
-          copyBtn.innerHTML = `<span class="btn-icon">⏳</span> Copying...`;
+          copyBtn.innerHTML = `<span class="btn-icon">⏳</span> ...`;
 
           try {
-            // Fetch the preview image
             const imageUrl = `/api/photo?key=${encodeURIComponent(filename)}&type=preview`;
             const res = await fetch(imageUrl);
             const blob = await res.blob();
 
-            // Create an image element to draw onto canvas
             const img = new Image();
             img.src = URL.createObjectURL(blob);
             await new Promise((resolve, reject) => {
@@ -417,7 +464,6 @@ import Layout from '../layouts/Layout.astro';
               img.onerror = reject;
             });
 
-            // Draw on canvas to get PNG format
             const canvas = document.createElement('canvas');
             canvas.width = img.naturalWidth;
             canvas.height = img.naturalHeight;
@@ -433,15 +479,20 @@ import Layout from '../layouts/Layout.astro';
                       'image/png': pngBlob
                     })
                   ]);
-                  copyBtn.innerHTML = `<span class="btn-icon">✅</span> Copied!`;
-                  setTimeout(() => {
-                    copyBtn.innerHTML = originalText;
-                    copyBtn.disabled = false;
-                    container.classList.remove('selected');
-                  }, 2000);
+                  
+                  const successText = toast?.dataset.success || "Copied to clipboard!";
+                  if (toast) {
+                    toast.innerText = successText;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 2000);
+                  }
+
+                  copyBtn.innerHTML = originalText;
+                  copyBtn.disabled = false;
+                  container.classList.remove('selected');
                 } catch (err) {
                   console.error("Clipboard API write failed:", err);
-                  copyBtn.innerHTML = `<span class="btn-icon">❌</span> Failed`;
+                  copyBtn.innerHTML = `<span class="btn-icon">❌</span>`;
                   setTimeout(() => {
                     copyBtn.innerHTML = originalText;
                     copyBtn.disabled = false;
@@ -454,7 +505,7 @@ import Layout from '../layouts/Layout.astro';
 
           } catch (err) {
             console.error("Error loading/copying photo:", err);
-            copyBtn.innerHTML = `<span class="btn-icon">❌</span> Error`;
+            copyBtn.innerHTML = `<span class="btn-icon">❌</span>`;
             setTimeout(() => {
               copyBtn.innerHTML = originalText;
               copyBtn.disabled = false;
@@ -510,6 +561,5 @@ import Layout from '../layouts/Layout.astro';
     });
   }
 
-  // Start initialization
   loadPhotos();
 </script>

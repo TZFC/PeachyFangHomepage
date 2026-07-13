@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>桃牙画廊 | 天子方辰 桃园</title><meta name="description" content="天子方辰 PeachyFang 的个人主页。提供高清相册、AR合影、自制表情包仓库等丰富内容。"><meta name="keywords" content="天子方辰, PeachyFang, 桃牙芳, 桃园, B站主播, 虚拟主播, Vtuber, 歌单, AR相机, 相册, 表情包"><meta property="og:title" content="桃牙画廊 | 天子方辰 桃园"><meta property="og:description" content="天子方辰 PeachyFang 的个人主页。提供高清相册、AR合影、自制表情包仓库等丰富内容。"><meta property="og:type" content="website"><meta property="og:url" content="https://peachyfang.muxiaokongh.com/zh/photo/"><link rel="canonical" href="https://peachyfang.muxiaokongh.com/zh/photo/"><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"><meta name="theme-color" content="#ff3e72"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"PeachyFang","alternateName":["天子方辰","Peachy","Fang"],"description":"天子方辰 PeachyFang 的个人主页。提供高清相册、AR合影、自制表情包仓库等丰富内容。","url":"https://peachyfang.muxiaokongh.com","sameAs":["https://live.bilibili.com/23596840"],"knowsLanguage":["zh-CN","en-US"]}</script><link rel="stylesheet" href="/_astro/Layout.DUdhvQ8s.css"><link rel="stylesheet" href="/_astro/photo.BUdnpRFN.css"></head> <body> <div class="bg-image"></div> <div class="center-blur-mask"> <div class="blur-effect-core"></div> </div> <div class="top-bar"> <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode">🌙</button> <a id="lang-toggle" href="/en/photo/" class="icon-btn" title="Switch Language" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">EN</a> </div>  <div class="container" data-astro-cid-wpshahk7> <a href="/zh/" class="back-btn" data-astro-cid-wpshahk7> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-wpshahk7><line x1="19" y1="12" x2="5" y2="12" data-astro-cid-wpshahk7></line><polyline points="12 19 5 12 12 5" data-astro-cid-wpshahk7></polyline></svg> ← 返回主页 </a> <div class="header" data-astro-cid-wpshahk7> <h1 data-astro-cid-wpshahk7>桃牙画廊</h1> <p data-astro-cid-wpshahk7>浏览我的高清快照。点击照片以复制其 PNG 预览到剪贴板或下载原始分辨率大图。</p> </div> <!-- Search Bar --> <div class="search-container" data-astro-cid-wpshahk7> <span class="search-icon" data-astro-cid-wpshahk7>🔍</span> <input type="text" id="search-bar" placeholder="按标签过滤（例如：full_body moon mountain）..." autocomplete="off" data-astro-cid-wpshahk7> <button id="clear-search" class="clear-btn" style="display: none;" data-astro-cid-wpshahk7>✕</button> </div> <!-- Gallery Grid --> <div class="gallery-wrapper" data-astro-cid-wpshahk7> <div id="gallery-grid" class="gallery-grid" data-labelcopy="复制 PNG" data-labeldownload="下载" data-failed="加载画廊失败，请检查服务器状态。" data-astro-cid-wpshahk7> <div class="loading-spinner" id="loading-spinner" data-astro-cid-wpshahk7> <div class="spinner" data-astro-cid-wpshahk7></div> <p data-astro-cid-wpshahk7>正在加载...</p> </div> </div> <div class="no-results" id="no-results" style="display: none;" data-astro-cid-wpshahk7> <span class="no-results-icon" data-astro-cid-wpshahk7>🍑</span> <p data-astro-cid-wpshahk7>未找到任何项目。</p> </div> </div> </div> <div id="toast" class="toast" data-success="已复制到剪贴板！" data-linkcopied="链接已复制！" data-astro-cid-wpshahk7> 已复制到剪贴板！ </div>  <div class="footer"> <strong>PeachyFang © 2026</strong><br> <span>Hosted at peachyfang.muxiaokongh.com | Developed with ❤️</span> </div> <script>
+        // --- Theme Management ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('siteTheme');
+        
+        let isDark;
+        if (savedTheme) {
+            isDark = savedTheme === 'dark';
+        } else {
+            isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        
+        function applyTheme() {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                if (themeToggleBtn) themeToggleBtn.innerText = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (themeToggleBtn) themeToggleBtn.innerText = '🌙';
+            }
+        }
+
+        applyTheme();
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                isDark = !isDark;
+                localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
+                applyTheme();
+            });
+        }
+
+        // Lang switch preference
+        const langToggleBtn = document.getElementById('lang-toggle');
+        if (langToggleBtn) {
+            langToggleBtn.addEventListener('click', function() {
+                const href = langToggleBtn.getAttribute('href') || '';
+                const nextLangVal = new URL(href, window.location.origin).pathname.split('/')[1];
+                localStorage.setItem('siteLang', nextLangVal);
+            });
+        }
+    </script> </body> </html>  <script type="module">globalThis.process??={};globalThis.process.env??={};let b=[];const s=document.getElementById("gallery-grid"),f=document.getElementById("loading-spinner"),r=document.getElementById("search-bar"),c=document.getElementById("clear-search"),w=document.getElementById("no-results"),y=document.getElementById("toast");async function H(){try{const e=await fetch("/api/photos");if(!e.ok)throw new Error("Failed to load photos");b=e.ok?await e.json():[],C(b)}catch(e){if(console.error(e),f&&s){const h=s.dataset.failed||"Failed to load gallery.";f.innerHTML=`<p style="color:var(--primary-color);">${h}</p>`}}}function C(e){if(f&&(f.style.display="none"),!s)return;if(s.querySelectorAll(".photo-card-container").forEach(t=>t.remove()),e.length===0){w&&(w.style.display="block");return}else w&&(w.style.display="none");const v=s.dataset.labelcopy||"Copy PNG",i=s.dataset.labeldownload||"Download";e.forEach(t=>{const L=t.includes("landscape")||t.includes("scene")||t.includes("beach"),n=document.createElement("div");n.className="photo-card-container",n.dataset.filename=t;const P=t.replace(/\.[^/.]+$/,"").split("-").map(l=>`<span class="tag-span">${l}</span>`).join("");n.innerHTML=`
+        <div class="photo-card-wrapper ${L?"landscape":""}">
+          <img src="/api/photo?key=${encodeURIComponent(t)}&type=preview" alt="Preview of ${t}" class="photo-image" loading="lazy" />
+          <div class="photo-tags-overlay">
+            ${P}
+          </div>
+        </div>
+        
+        <div class="photo-actions-popout">
+          <button class="action-btn copy" title="Copy preview as PNG to clipboard">
+            <span class="btn-icon">📋</span> ${v}
+          </button>
+          <a class="action-btn download" href="/api/photo?key=${encodeURIComponent(t)}&type=full" download="${t}" title="Download original photo">
+            <span class="btn-icon">💾</span> ${i}
+          </a>
+        </div>
+      `;const T=n.querySelector(".photo-card-wrapper");T&&T.addEventListener("click",l=>{l.stopPropagation();const d=n.classList.contains("selected");document.querySelectorAll(".photo-card-container").forEach(p=>{p.classList.remove("selected")}),d||n.classList.add("selected")});const o=n.querySelector(".action-btn.copy");o&&o.addEventListener("click",async l=>{l.stopPropagation(),o.disabled=!0;const d=o.innerHTML;o.innerHTML='<span class="btn-icon">⏳</span> ...';try{const p=`/api/photo?key=${encodeURIComponent(t)}&type=preview`,k=await(await fetch(p)).blob(),a=new Image;a.src=URL.createObjectURL(k),await new Promise((m,u)=>{a.onload=m,a.onerror=u});const g=document.createElement("canvas");g.width=a.naturalWidth,g.height=a.naturalHeight;const I=g.getContext("2d");if(I)I.drawImage(a,0,0),g.toBlob(async m=>{if(!m)throw new Error("Canvas PNG generation failed");try{await navigator.clipboard.write([new ClipboardItem({"image/png":m})]);const u=y?.dataset.success||"Copied to clipboard!";y&&(y.innerText=u,y.classList.add("show"),setTimeout(()=>y.classList.remove("show"),2e3)),o.innerHTML=d,o.disabled=!1,n.classList.remove("selected")}catch(u){console.error("Clipboard API write failed:",u),o.innerHTML='<span class="btn-icon">❌</span>',setTimeout(()=>{o.innerHTML=d,o.disabled=!1},2e3)}},"image/png");else throw new Error("Could not get 2D context")}catch(p){console.error("Error loading/copying photo:",p),o.innerHTML='<span class="btn-icon">❌</span>',setTimeout(()=>{o.innerHTML=d,o.disabled=!1},2e3)}}),s.appendChild(n)})}function $(){if(!r)return;const e=r.value.trim().toLowerCase();if(e===""){c&&(c.style.display="none"),C(b);return}c&&(c.style.display="block");const h=e.split(/\s+/).filter(i=>i.length>0),v=b.filter(i=>{const L=i.toLowerCase().replace(/\.[^/.]+$/,"").split("-");return h.every(n=>L.some(E=>E.includes(n)||n.includes(E)))});C(v)}document.addEventListener("click",()=>{document.querySelectorAll(".photo-card-container").forEach(e=>{e.classList.remove("selected")})});r&&r.addEventListener("input",$);c&&c.addEventListener("click",()=>{r&&(r.value=""),$()});H();</script>

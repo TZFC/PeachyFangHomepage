@@ -1,49 +1,37 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import '../styles/home.css';
+// Root page: Detects preferred language and redirects to localized subfolder
 ---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天子方辰 桃园 | PeachyFang Peach Garden</title>
+    <meta http-equiv="refresh" content="0;url=/zh/" />
+    <link rel="canonical" href="https://peachyfang.muxiaokongh.com/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://peachyfang.muxiaokongh.com/zh/" />
+    <link rel="alternate" hreflang="en" href="https://peachyfang.muxiaokongh.com/en/" />
+    
+    <script is:inline>
+        const supportedLangs = ['zh', 'en'];
+        const savedLang = localStorage.getItem('siteLang');
 
-<Layout title="PeachyFang's Home | 桃牙芳的主页">
-  <div class="container">
-    <div class="header">
-      <div class="avatar-container">
-        <div class="avatar-glow"></div>
-        <img src="/avatar_peachy.svg" alt="PeachyFang Avatar" class="avatar" />
-      </div>
-      <h1>PeachyFang 桃牙芳</h1>
-      <p class="bio">
-        Hi there! I'm <strong>PeachyFang</strong> (桃牙芳) 🍑. Welcome to my peach garden! 
-        I'm a Bilibili content creator and livestreamer who loves singing, gaming, and sharing sweet moments with everyone. 
-        <br/>
-        <span class="cn-bio">你好！我是 PeachyFang 桃牙芳 🍑，欢迎光临我的蜜桃小窝！我是一名喜欢唱歌、打游戏和聊天的哔哩哔哩主播，很高兴在这里遇见你！</span>
-      </p>
-      
-      <div class="header-buttons-container">
-        <a href="https://live.bilibili.com/23596840" target="_blank" class="btn header-btn bili-btn">
-          <span class="btn-icon">📺</span> Bilibili Livestream
-        </a>
-      </div>
-    </div>
+        if (savedLang && supportedLangs.includes(savedLang)) {
+            window.location.replace(`/${savedLang}/`);
+        } else {
+            const browserLang = navigator.language.toLowerCase();
+            let targetLang = 'zh'; // default
 
-    <h2 class="explore-title">Explore My Hub</h2>
-    <div class="nav-cards-container">
-      <a href="/photo" class="nav-card">
-        <div class="nav-card-icon">📸</div>
-        <div class="nav-card-title">Photo Gallery</div>
-        <div class="nav-card-desc">Browse my high-resolution photos, copy previews, and download originals. Filter by tags.</div>
-      </a>
-      
-      <a href="/selfie" class="nav-card">
-        <div class="nav-card-icon">🤳</div>
-        <div class="nav-card-title">AR Camera</div>
-        <div class="nav-card-desc">Try on different camera overlays and filters to take screenshots and selfies!</div>
-      </a>
+            if (browserLang.startsWith('en')) {
+                targetLang = 'en';
+            } else {
+                targetLang = 'zh';
+            }
 
-      <a href="/emoticons" class="nav-card">
-        <div class="nav-card-icon">😊</div>
-        <div class="nav-card-title">Emoticons</div>
-        <div class="nav-card-desc">Cute character sticker collection. Click any emoticon to copy the image directly to your clipboard!</div>
-      </a>
-    </div>
-  </div>
-</Layout>
+            window.location.replace(`/${targetLang}/`);
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>

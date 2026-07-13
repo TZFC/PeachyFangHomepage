@@ -1,4 +1,5 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 import '../styles/base.css';
 import '../styles/components.css';
 
@@ -9,28 +10,34 @@ interface Props {
 }
 
 const { title, description, keywords } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const translate = useTranslations(lang);
 
-const finalDesc = description || "Welcome to PeachyFang's Hub. Gallery of high resolution photos, AR camera, Bilibili livestream and more!";
-const finalKeywords = keywords || "PeachyFang, Bilibili, Vtuber, Photo, Gallery, AR Camera, Selfie, filter, R2, Cloudflare";
+const finalDesc = description || translate('metaDesc');
+const finalKeywords = keywords || translate('metaKeywords');
 const siteUrl = "https://peachyfang.muxiaokongh.com";
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+
+const nextLang = lang === 'zh' ? 'en' : 'zh';
+const nextLangLabel = lang === 'zh' ? 'EN' : '简';
+const targetPath = Astro.url.pathname.replace(`/${lang}`, `/${nextLang}`);
 
 const schemaMarkup = {
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "PeachyFang",
-    "alternateName": ["桃牙芳", "Peachy", "Fang"],
+    "alternateName": ["天子方辰", "Peachy", "Fang"],
     "description": finalDesc,
     "url": siteUrl,
     "sameAs": [
-        "https://live.bilibili.com/23596840", // Using MXK as placeholder or direct stream
+        "https://live.bilibili.com/23596840",
     ],
     "knowsLanguage": ["zh-CN", "en-US"]
 };
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang={lang === 'zh' ? 'zh-CN' : 'en-US'}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,6 +76,7 @@ const schemaMarkup = {
     
     <div class="top-bar">
         <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode">🌙</button>
+        <a id="lang-toggle" href={targetPath} class="icon-btn" title="Switch Language" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">{nextLangLabel}</a>
     </div>
 
     <slot />
@@ -107,6 +115,16 @@ const schemaMarkup = {
                 isDark = !isDark;
                 localStorage.setItem('siteTheme', isDark ? 'dark' : 'light');
                 applyTheme();
+            });
+        }
+
+        // Lang switch preference
+        const langToggleBtn = document.getElementById('lang-toggle');
+        if (langToggleBtn) {
+            langToggleBtn.addEventListener('click', function() {
+                const href = langToggleBtn.getAttribute('href') || '';
+                const nextLangVal = new URL(href, window.location.origin).pathname.split('/')[1];
+                localStorage.setItem('siteLang', nextLangVal);
             });
         }
     </script>

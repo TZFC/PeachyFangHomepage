@@ -1,0 +1,55 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+import '../../styles/home.css';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'zh' } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const translate = useTranslations(lang);
+---
+
+<Layout title={translate('title')}>
+  <div class="container">
+    <div class="header">
+      <div class="avatar-container">
+        <div class="avatar-glow"></div>
+        <img src="/avatar_peachy.svg" alt="PeachyFang Avatar" class="avatar" />
+      </div>
+      <h1>{lang === 'zh' ? '天子方辰 PeachyFang' : 'PeachyFang (天子方辰)'}</h1>
+      <p class="bio" set:html={translate('desc')}></p>
+      
+      <div class="header-buttons-container">
+        <a href="https://live.bilibili.com/23596840" target="_blank" class="btn header-btn bili-btn">
+          <span class="btn-icon">📺</span> {translate('biliBtn')}
+        </a>
+      </div>
+    </div>
+
+    <h2 class="explore-title">{lang === 'zh' ? '探索桃园' : 'Explore Peach Garden'}</h2>
+    <div class="nav-cards-container">
+      <a href={`/${lang}/photo/`} class="nav-card">
+        <div class="nav-card-icon">📸</div>
+        <div class="nav-card-title">{translate('cardPhotoTitle')}</div>
+        <div class="nav-card-desc">{translate('cardPhotoDesc')}</div>
+      </a>
+      
+      <a href={`/${lang}/selfie/`} class="nav-card">
+        <div class="nav-card-icon">🤳</div>
+        <div class="nav-card-title">{translate('cardSelfieTitle')}</div>
+        <div class="nav-card-desc">{translate('cardSelfieDesc')}</div>
+      </a>
+
+      <a href={`/${lang}/emoticons/`} class="nav-card">
+        <div class="nav-card-icon">😊</div>
+        <div class="nav-card-title">{translate('cardEmoticonsTitle')}</div>
+        <div class="nav-card-desc">{translate('cardEmoticonsDesc')}</div>
+      </a>
+    </div>
+  </div>
+</Layout>
