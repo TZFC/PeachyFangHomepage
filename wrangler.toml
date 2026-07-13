@@ -1,0 +1,18 @@
+name = "peachyfanghomepage"
+compatibility_date = "2026-07-12"
+
+# R2 Bucket Bindings for PeachyFang Homepage
+# Note: For Git-integrated deployments on Cloudflare Pages, R2 bindings 
+# MUST be manually linked in the Cloudflare Dashboard settings.
+
+[[r2_buckets]]
+binding = "peachy_preview_store"
+bucket_name = "peachypreview"
+
+[[r2_buckets]]
+binding = "peachy_full_store"
+bucket_name = "peachyfull"
+
+[[r2_buckets]]
+binding = "peachy_emoticons_store"
+bucket_name = "peachyemoticons"
