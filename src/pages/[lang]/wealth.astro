@@ -406,14 +406,22 @@ const translate = useTranslations(lang);
       k = formatNum(k - expense);
       logs.push(t('expense', { expense: expense, wealthy: w, worker: k }));
       
-      // 7. Ratio
+      // 8. Ratio and Rescale
       const displayW = Math.max(0, w);
       const displayK = Math.max(0, k);
       const displayTotal = formatNum(displayW + displayK);
       
-      const wRatio = displayTotal > 0 ? formatNum((displayW / displayTotal) * 100) : 0;
-      const kRatio = displayTotal > 0 ? formatNum((displayK / displayTotal) * 100) : 0;
-      logs.push(t('ratio', { wealthyRatio: wRatio, workerRatio: kRatio }));
+      const wRatioRaw = displayTotal > 0 ? (displayW / displayTotal) : 0;
+      const kRatioRaw = displayTotal > 0 ? (displayK / displayTotal) : 0;
+      
+      const wRatio = formatNum(wRatioRaw * 100);
+      const kRatio = formatNum(kRatioRaw * 100);
+      
+      const macroTotal = total;
+      w = formatNum(macroTotal * wRatioRaw);
+      k = formatNum(macroTotal * kRatioRaw);
+      
+      logs.push(t('ratio', { macroTotal: macroTotal, wealthyRatio: wRatio, workerRatio: kRatio, wealthy: w, worker: k }));
       
       const finalTotal = formatNum(w + k);
       return { state: { w, k, total: finalTotal, wRatio, kRatio }, logs };

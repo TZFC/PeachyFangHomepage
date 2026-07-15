@@ -50,9 +50,9 @@ const zhDict = {
     wealthLogPaycheck: "3. 薪水支付: 工人从富人处获得 {paycheck}。剩余富人 {wealthy}, 工人 {worker}",
     wealthLogIncomeTax: "4. 所得税 ({taxRate}%): 工人缴纳 {incomeTax}。剩余工人 {worker}",
     wealthLogWelfare: "5. 社会福利: 总税收 {totalTax}，每人获得 {welfare}。最终富人 {wealthy}, 工人 {worker}",
-    wealthLogRatio: "6. 新饼图比例: 富人 {wealthyRatio}%, 工人 {workerRatio}%",
+    wealthLogRatio: "7. 通胀再分配: 经济总量恢复至 {macroTotal}，按比例重新分配。富人 {wealthyRatio}% ({wealthy}), 工人 {workerRatio}% ({worker})",
     wealthExpense: "生活开销",
-    wealthLogExpense: "7. 生活开销: 两人各扣除 {expense}。剩余富人 {wealthy}, 工人 {worker}",
+    wealthLogExpense: "6. 生活开销: 两人各扣除 {expense}。剩余富人 {wealthy}, 工人 {worker}",
     cardWealthTitle: "财富模拟器",
     cardWealthDesc: "通过简单的模型演示财富的分配与税收福利的影响。"
 };
@@ -102,9 +102,9 @@ const enDict = {
     wealthLogPaycheck: "3. Paycheck: Worker receives {paycheck} from Wealthy. Wealthy has {wealthy}, Worker has {worker}",
     wealthLogIncomeTax: "4. Income Tax ({taxRate}%): Worker pays {incomeTax}. Worker has {worker}",
     wealthLogWelfare: "5. Social Welfare: Total tax {totalTax} split equally. Each gets {welfare}. Final Wealthy {wealthy}, Worker {worker}",
-    wealthLogRatio: "6. New Ratio: Wealthy {wealthyRatio}%, Worker {workerRatio}%",
+    wealthLogRatio: "7. Inflation Redistribution: Economy restored to {macroTotal}. Wealthy gets {wealthyRatio}% ({wealthy}), Worker gets {workerRatio}% ({worker})",
     wealthExpense: "Living Expense",
-    wealthLogExpense: "7. Living Expense: Both deducted by {expense}. Wealthy has {wealthy}, Worker has {worker}",
+    wealthLogExpense: "6. Living Expense: Both deducted by {expense}. Wealthy has {wealthy}, Worker has {worker}",
     cardWealthTitle: "Wealth Simulator",
     cardWealthDesc: "An interactive simulation of wealth distribution, taxes, and welfare."
 };
