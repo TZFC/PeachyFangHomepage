@@ -61,16 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const simulateYear = (state: State, params: Params) => {
     const logs: string[] = [];
     
-    // 1. Interest
-    const growthMult = 1 + (params.growthRate / 100);
-    const wGrow = formatNum(state.w * (params.growthRate / 100));
-    const kGrow = formatNum(state.k * (params.growthRate / 100));
+    // 1. Interest (Capital Growth)
+    const g = params.growthRate / 100;
+    
+    // Wealthy capital compounds. Worker capital does not.
+    const wGrow = formatNum(state.w * g); 
     let w = formatNum(state.w + wGrow);
-    let k = formatNum(state.k + kGrow);
+    let k = state.k; 
     let total = formatNum(w + k);
     
-    let currentPaycheck = formatNum(state.currentPaycheck * growthMult);
-    let currentExpense = formatNum(state.currentExpense * growthMult);
+    let currentPaycheck = formatNum(state.currentPaycheck * (1 + g));
+    let currentExpense = formatNum(state.currentExpense * (1 + g));
     
     logs.push(t('interest', { growthRate: params.growthRate, wealthy: w, worker: k, total: total }));
     
@@ -82,16 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalWealthTax = formatNum(wTax + kTax);
     logs.push(t('wealthtax', { taxRate: params.wealthTax, wealthyTax: wTax, workerTax: kTax, wealthy: w, worker: k }));
     
-    // 3. Paycheck
-    // Note: wealthy pays the worker
+    // 3. Labor Loop (Wages & Profit)
     let actualPaycheck = currentPaycheck;
-    if (w < actualPaycheck) {
-      // Can only pay what they have
-      actualPaycheck = w;
-    }
-    w = formatNum(w - actualPaycheck);
+    // Wealthy nets the profit margin (g) on the labor they paid for
+    const laborProfit = formatNum(actualPaycheck * g);
+    
     k = formatNum(k + actualPaycheck);
-    logs.push(t('paycheck', { paycheck: actualPaycheck, wealthy: w, worker: k }));
+    w = formatNum(w + laborProfit); 
+    logs.push(t('paycheck', { paycheck: actualPaycheck, profit: laborProfit, wealthy: w, worker: k }));
     
     // 4. Income Tax (paid by worker on the paycheck)
     const incomeTax = formatNum(actualPaycheck * (params.incomeTax / 100));
@@ -105,30 +104,27 @@ document.addEventListener('DOMContentLoaded', () => {
     k = formatNum(k + welfare);
     logs.push(t('welfare', { totalTax: totalTax, welfare: welfare, wealthy: w, worker: k }));
     
-    // 6. Living Expense (Step 7 in user prompt context)
+    // 6. Consumption Loop (Living Expenses)
     const expense = currentExpense;
-    w = formatNum(w - expense);
-    k = formatNum(k - expense);
-    logs.push(t('expense', { expense: expense, wealthy: w, worker: k }));
+    // Wealthy captures the margin (g) as corporate profit.
+    // The rest (1-g) circulates back into the worker class, making the net loss for workers equal to the profit.
+    const corporateProfit = formatNum(expense * g);
     
-    // 8. Ratio and Rescale
+    k = formatNum(k - corporateProfit);
+    w = formatNum(w + corporateProfit);
+    logs.push(t('expense', { expense: expense, profitExtracted: corporateProfit, wealthy: w, worker: k }));
+    
+    // 7 & 8. Ratio (Remove the "Rescale" phase entirely)
+    // Do not multiply ratios back against macroTotal. Let the closed loops dictate the total wealth naturally.
     const displayW = Math.max(0, w);
     const displayK = Math.max(0, k);
-    const displayTotal = formatNum(displayW + displayK);
+    const finalTotal = formatNum(displayW + displayK);
     
-    const wRatioRaw = displayTotal > 0 ? (displayW / displayTotal) : 0;
-    const kRatioRaw = displayTotal > 0 ? (displayK / displayTotal) : 0;
+    const wRatio = formatNum(finalTotal > 0 ? (displayW / finalTotal) * 100 : 0);
+    const kRatio = formatNum(finalTotal > 0 ? (displayK / finalTotal) * 100 : 0);
     
-    const wRatio = formatNum(wRatioRaw * 100);
-    const kRatio = formatNum(kRatioRaw * 100);
+    logs.push(t('ratio', { macroTotal: finalTotal, wealthyRatio: wRatio, workerRatio: kRatio, wealthy: w, worker: k }));
     
-    const macroTotal = total;
-    w = formatNum(macroTotal * wRatioRaw);
-    k = formatNum(macroTotal * kRatioRaw);
-    
-    logs.push(t('ratio', { macroTotal: macroTotal, wealthyRatio: wRatio, workerRatio: kRatio, wealthy: w, worker: k }));
-    
-    const finalTotal = formatNum(w + k);
     return { state: { w, k, total: finalTotal, wRatio, kRatio, currentPaycheck, currentExpense }, logs };
   };
 
