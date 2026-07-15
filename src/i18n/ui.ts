@@ -57,7 +57,13 @@ const zhDict = {
     wealthLogExpense: "6. 生活开销: 工人花费 {expense}，富人从中提取 {profitExtracted} 企业利润。富人剩余 {wealthy}, 工人剩余 {worker}",
     cardWealthTitle: "财富模拟器",
     cardWealthDesc: "通过简单的模型演示财富的分配与税收福利的影响。",
-    wealthResetBtn: "重置"
+    wealthResetBtn: "重置",
+    wealthMathTitle: "数学公式与模型假设",
+    wealthMathAssumptions: "模型假设：",
+    wealthMathAssumptionsList: "<li>经济增长率 ($g$) 作为普遍利润率。</li><li>富人的资本以 $g$ 增长（复利），而工人资本不产生复利。</li><li>劳动循环：富人支付工资，工人赚取工资的同时，为富人创造等于 工资 &times; $g$ 的企业利润。</li><li>消费循环：工人的生活开销流回经济体，富人从中提取相当于 开销 &times; $g$ 的企业利润。</li>",
+    wealthMathFormulas: "核心公式 (从第 $t$ 年到 $t+1$ 年)：",
+    wealthMathFormulaW: "$W_{t+1} = W_t &times; (1 + g - \\tau_{wealth}) + P &times; g + E &times; g + Welfare$",
+    wealthMathFormulaK: "$K_{t+1} = K_t &times; (1 - \\tau_{wealth}) + P &times; (1 - \\tau_{income}) - E &times; g + Welfare$"
 };
 
 const enDict = {
@@ -112,7 +118,13 @@ const enDict = {
     wealthLogExpense: "6. Living Expense: Worker spends {expense}, Wealthy extracts {profitExtracted} corporate profit. Wealthy has {wealthy}, Worker has {worker}",
     cardWealthTitle: "Wealth Simulator",
     cardWealthDesc: "An interactive simulation of wealth distribution, taxes, and welfare.",
-    wealthResetBtn: "Reset"
+    wealthResetBtn: "Reset",
+    wealthMathTitle: "Mathematical Formulas & Assumptions",
+    wealthMathAssumptions: "Assumptions:",
+    wealthMathAssumptionsList: "<li>Economic Growth ($g$) acts as a universal profit margin.</li><li>Wealthy capital compounds at rate $g$, while worker capital does not.</li><li>Labor Loop: For every $1 paid in wages, the wealthy nets $g in profit.</li><li>Consumption Loop: Worker living expenses circulate back into the economy, but the wealthy extracts $g margin as corporate profit.</li>",
+    wealthMathFormulas: "Core Formulas (Year $t$ to $t+1$):",
+    wealthMathFormulaW: "$W_{t+1} = W_t &times; (1 + g - \\tau_{wealth}) + P &times; g + E &times; g + Welfare$",
+    wealthMathFormulaK: "$K_{t+1} = K_t &times; (1 - \\tau_{wealth}) + P &times; (1 - \\tau_{income}) - E &times; g + Welfare$"
 };
 
 export const ui = {

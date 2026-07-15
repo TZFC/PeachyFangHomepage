@@ -101,6 +101,19 @@ const translate = useTranslations(lang);
         <input type="number" id="yearNum" class="year-display" min="0" max="200" value="0" />
       </div>
     </div>
+
+    <!-- Math Explanation -->
+    <details class="math-details">
+      <summary>{translate('wealthMathTitle')}</summary>
+      <div class="math-content">
+        <h4>{translate('wealthMathAssumptions')}</h4>
+        <ul class="assumptions-list" set:html={translate('wealthMathAssumptionsList')}></ul>
+        
+        <h4>{translate('wealthMathFormulas')}</h4>
+        <div class="formula" set:html={translate('wealthMathFormulaW')}></div>
+        <div class="formula" set:html={translate('wealthMathFormulaK')}></div>
+      </div>
+    </details>
   </div>
 </Layout>
 
@@ -314,6 +327,73 @@ const translate = useTranslations(lang);
   .year-display:focus {
     outline: none;
     border-color: var(--accent-color, #ff6b6b);
+  }
+
+  /* Math Details Box */
+  .math-details {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-top: 2rem;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+  }
+  
+  .math-details summary {
+    padding: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .math-details summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  .math-details summary::after {
+    content: "▼";
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .math-details[open] summary::after {
+    transform: rotate(180deg);
+  }
+  
+  .math-content {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .math-content h4 {
+    margin: 1.5rem 0 0.5rem 0;
+    color: var(--accent-color, #ff6b6b);
+  }
+  
+  .assumptions-list {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+  
+  .assumptions-list :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .formula {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    font-family: monospace;
+    font-size: 1rem;
+    overflow-x: auto;
   }
 </style>
 
