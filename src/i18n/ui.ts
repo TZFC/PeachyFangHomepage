@@ -56,7 +56,8 @@ const zhDict = {
     wealthExpense: "初始生活开销",
     wealthLogExpense: "6. 生活开销: 两人各扣除 {expense}。剩余富人 {wealthy}, 工人 {worker}",
     cardWealthTitle: "财富模拟器",
-    cardWealthDesc: "通过简单的模型演示财富的分配与税收福利的影响。"
+    cardWealthDesc: "通过简单的模型演示财富的分配与税收福利的影响。",
+    wealthResetBtn: "重置"
 };
 
 const enDict = {
@@ -110,7 +111,8 @@ const enDict = {
     wealthExpense: "Initial Living Expense",
     wealthLogExpense: "6. Living Expense: Both deducted by {expense}. Wealthy has {wealthy}, Worker has {worker}",
     cardWealthTitle: "Wealth Simulator",
-    cardWealthDesc: "An interactive simulation of wealth distribution, taxes, and welfare."
+    cardWealthDesc: "An interactive simulation of wealth distribution, taxes, and welfare.",
+    wealthResetBtn: "Reset"
 };
 
 export const ui = {
