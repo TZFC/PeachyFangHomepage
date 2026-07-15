@@ -34,8 +34,8 @@ const translate = useTranslations(lang);
       <div class="wealth-pie-container">
         <div class="pie-chart" id="pieChart"></div>
         <div class="pie-labels">
-          <div class="label-red"><span class="color-box bg-red"></span> <span id="labelWealthy">Wealthy</span></div>
-          <div class="label-blue"><span class="color-box bg-blue"></span> <span id="labelWorker">Worker</span></div>
+          <div class="label-red"><span class="color-box bg-red"></span> <span id="labelWealthy">{translate('wealthLabelWealthy')}</span></div>
+          <div class="label-blue"><span class="color-box bg-blue"></span> <span id="labelWorker">{translate('wealthLabelWorker')}</span></div>
         </div>
       </div>
 
@@ -299,6 +299,8 @@ const translate = useTranslations(lang);
   data-welfare={translate('wealthLogWelfare')}
   data-ratio={translate('wealthLogRatio')}
   data-expense={translate('wealthLogExpense')}
+  data-wealthy={translate('wealthLabelWealthy')}
+  data-worker={translate('wealthLabelWorker')}
 ></div>
 
 <script>
@@ -530,8 +532,8 @@ const translate = useTranslations(lang);
       }
       
       // Update Labels
-      labelWealthy.innerText = `Wealthy: ${state.wRatio}% (${state.w})`;
-      labelWorker.innerText = `Worker: ${state.kRatio}% (${state.k})`;
+      labelWealthy.innerText = `${t('wealthy')}: ${state.wRatio}% (${state.w})`;
+      labelWorker.innerText = `${t('worker')}: ${state.kRatio}% (${state.k})`;
     };
 
     // Setup Event Listeners for sync and update
