@@ -72,6 +72,14 @@ const translate = useTranslations(lang);
             <input type="number" id="incomeTaxNum" min="0" max="100" value="30" />
           </div>
         </div>
+        
+        <div class="control-group">
+          <label for="expense">{translate('wealthExpense')}</label>
+          <div class="slider-row">
+            <input type="range" id="expense" min="0" max="50" value="1" step="0.5" />
+            <input type="number" id="expenseNum" min="0" max="100" value="1" step="0.5" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -272,6 +280,7 @@ const translate = useTranslations(lang);
   data-incometax="{translate('wealthLogIncomeTax')}"
   data-welfare="{translate('wealthLogWelfare')}"
   data-ratio="{translate('wealthLogRatio')}"
+  data-expense="{translate('wealthLogExpense')}"
 ></div>
 
 <script>
@@ -292,6 +301,8 @@ const translate = useTranslations(lang);
       paycheckNum: document.getElementById('paycheckNum') as HTMLInputElement,
       incomeTax: document.getElementById('incomeTax') as HTMLInputElement,
       incomeTaxNum: document.getElementById('incomeTaxNum') as HTMLInputElement,
+      expense: document.getElementById('expense') as HTMLInputElement,
+      expenseNum: document.getElementById('expenseNum') as HTMLInputElement,
       yearSlider: document.getElementById('yearSlider') as HTMLInputElement,
       currentYearDisplay: document.getElementById('currentYearDisplay') as HTMLSpanElement
     };
@@ -321,6 +332,7 @@ const translate = useTranslations(lang);
       wealthTax: number;
       paycheck: number;
       incomeTax: number;
+      expense: number;
       targetYear: number;
     }
 
@@ -367,7 +379,13 @@ const translate = useTranslations(lang);
       k = formatNum(k + welfare);
       logs.push(t('welfare', { totalTax: totalTax, welfare: welfare, wealthy: w, worker: k }));
       
-      // 6. Ratio
+      // 6. Living Expense (Step 7 in user prompt context)
+      const expense = params.expense;
+      w = formatNum(w - expense);
+      k = formatNum(k - expense);
+      logs.push(t('expense', { expense: expense, wealthy: w, worker: k }));
+      
+      // 7. Ratio
       const finalTotal = formatNum(w + k);
       const wRatio = finalTotal > 0 ? formatNum((w / finalTotal) * 100) : 0;
       const kRatio = finalTotal > 0 ? formatNum((k / finalTotal) * 100) : 0;
@@ -382,6 +400,7 @@ const translate = useTranslations(lang);
         wealthTax: parseFloat(inputs.wealthTax.value) || 0,
         paycheck: parseFloat(inputs.paycheck.value) || 0,
         incomeTax: parseFloat(inputs.incomeTax.value) || 0,
+        expense: parseFloat(inputs.expense.value) || 0,
         targetYear: parseInt(inputs.yearSlider.value, 10) || 0
       };
       
@@ -438,6 +457,7 @@ const translate = useTranslations(lang);
     setupSync(inputs.wealthTax, inputs.wealthTaxNum);
     setupSync(inputs.paycheck, inputs.paycheckNum);
     setupSync(inputs.incomeTax, inputs.incomeTaxNum);
+    setupSync(inputs.expense, inputs.expenseNum);
     
     inputs.yearSlider.addEventListener('input', (e: Event) => {
       inputs.currentYearDisplay.innerText = (e.target as HTMLInputElement).value;
