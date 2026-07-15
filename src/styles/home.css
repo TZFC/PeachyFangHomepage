@@ -69,13 +69,6 @@
     color: var(--text-color);
 }
 
-.cn-bio {
-    display: block;
-    margin-top: 12px;
-    font-size: 0.95em;
-    color: var(--text-muted);
-}
-
 .header-buttons-container {
     display: flex;
     justify-content: center;
