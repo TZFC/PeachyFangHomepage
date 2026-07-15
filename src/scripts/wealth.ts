@@ -270,6 +270,51 @@ document.addEventListener('DOMContentLoaded', () => {
     runSimulation();
   });
 
+  // Sticky Pie Chart Scroll Effect (Mobile)
+  const layout = document.querySelector('.wealth-layout') as HTMLDivElement;
+  const pieContainer = document.querySelector('.wealth-pie-container') as HTMLDivElement;
+  
+  if (layout && pieContainer && pieChart) {
+    let originalOffsetTop = 0;
+    
+    const updatePieSize = () => {
+      if (window.innerWidth > 900) {
+        pieChart.style.width = '';
+        pieChart.style.height = '';
+        return;
+      }
+      
+      // On mobile, the default size is 200px
+      if (originalOffsetTop === 0 && pieContainer.offsetTop > 0) {
+        originalOffsetTop = pieContainer.offsetTop;
+      }
+      
+      const layoutRect = layout.getBoundingClientRect();
+      const stickyThreshold = 16; // 1rem in px
+      
+      // How much we've scrolled past the point where the pie chart becomes sticky
+      // It starts sticking when layoutRect.top + originalOffsetTop <= stickyThreshold
+      const overScroll = Math.max(0, stickyThreshold - (layoutRect.top + originalOffsetTop));
+      
+      // Shrink over a scroll distance of 300px, min scale is 0.5
+      const scale = Math.max(0.5, 1 - (overScroll / 300));
+      
+      pieChart.style.width = `${200 * scale}px`;
+      pieChart.style.height = `${200 * scale}px`;
+    };
+
+    window.addEventListener('scroll', updatePieSize, { passive: true });
+    window.addEventListener('resize', () => {
+      // Recalculate offset on resize if we are at the top, or just reset
+      if (window.scrollY < 100) originalOffsetTop = 0;
+      updatePieSize();
+    }, { passive: true });
+    
+    // Initial call
+    // setTimeout to ensure layout is done
+    setTimeout(updatePieSize, 100);
+  }
+
   // Initial Run
   runSimulation();
 });
