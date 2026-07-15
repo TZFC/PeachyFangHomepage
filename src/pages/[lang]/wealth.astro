@@ -1,0 +1,450 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+import '../../styles/home.css';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'zh' } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const translate = useTranslations(lang);
+---
+
+<Layout title={translate('wealthTitle')}>
+  <div class="container wealth-container">
+    <div class="header" style="margin-bottom: 2rem;">
+      <a href={`/${lang}/`} class="btn" style="margin-bottom: 1rem; display: inline-block;">
+        &larr; {translate('backBtn')}
+      </a>
+      <h1>{translate('wealthTitle')}</h1>
+      <p class="desc">{translate('wealthDesc')}</p>
+    </div>
+
+    <div class="wealth-layout">
+      <!-- Left: Logs -->
+      <div class="wealth-logs" id="logContainer">
+        <!-- Logs will be injected here via JS -->
+      </div>
+
+      <!-- Center: Pie Chart -->
+      <div class="wealth-pie-container">
+        <div class="pie-chart" id="pieChart"></div>
+        <div class="pie-labels">
+          <div class="label-red"><span class="color-box bg-red"></span> <span id="labelWealthy">Wealthy</span></div>
+          <div class="label-blue"><span class="color-box bg-blue"></span> <span id="labelWorker">Worker</span></div>
+        </div>
+      </div>
+
+      <!-- Right: Controls -->
+      <div class="wealth-controls">
+        <div class="control-group">
+          <label for="initialWealthy">{translate('wealthInitialWealthy')}</label>
+          <div class="slider-row">
+            <input type="range" id="initialWealthy" min="0" max="100" value="80" step="1" />
+            <input type="number" id="initialWealthyNum" min="0" max="100" value="80" />
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label for="wealthTax">{translate('wealthTaxRate')}</label>
+          <div class="slider-row">
+            <input type="range" id="wealthTax" min="0" max="100" value="0" step="1" />
+            <input type="number" id="wealthTaxNum" min="0" max="100" value="0" />
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label for="paycheck">{translate('wealthPaycheck')}</label>
+          <div class="slider-row">
+            <input type="range" id="paycheck" min="0" max="50" value="2" step="0.5" />
+            <input type="number" id="paycheckNum" min="0" max="100" value="2" step="0.5" />
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label for="incomeTax">{translate('wealthIncomeTaxRate')}</label>
+          <div class="slider-row">
+            <input type="range" id="incomeTax" min="0" max="100" value="30" step="1" />
+            <input type="number" id="incomeTaxNum" min="0" max="100" value="30" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom: Time Slider -->
+    <div class="time-control">
+      <label for="yearSlider">{translate('wealthYearLabel')}</label>
+      <div class="slider-row large-slider">
+        <input type="range" id="yearSlider" min="0" max="50" value="0" step="1" />
+        <div class="year-display">
+          <span id="currentYearDisplay">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .wealth-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .wealth-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 3rem;
+  }
+  
+  @media (max-width: 900px) {
+    .wealth-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Logs Panel */
+  .wealth-logs {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: 400px;
+    overflow-y: auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .log-year {
+    font-weight: bold;
+    color: var(--accent-color, #ff6b6b);
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.25rem;
+  }
+
+  .log-entry {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Pie Chart */
+  .wealth-pie-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+  }
+  
+  .pie-chart {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: conic-gradient(#ff4757 0% 80%, #1e90ff 80% 100%);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.5);
+    transition: background 0.3s ease;
+    border: 4px solid rgba(255,255,255,0.1);
+  }
+  
+  .pie-labels {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .color-box {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  .bg-red { background: #ff4757; }
+  .bg-blue { background: #1e90ff; }
+  
+  .label-red { color: #ff4757; }
+  .label-blue { color: #1e90ff; }
+
+  /* Controls */
+  .wealth-controls {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    backdrop-filter: blur(10px);
+  }
+  
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .control-group label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  input[type=range] {
+    flex-grow: 1;
+    cursor: pointer;
+    accent-color: var(--accent-color, #ff6b6b);
+  }
+  
+  input[type=number] {
+    width: 70px;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-family: inherit;
+    text-align: center;
+  }
+  
+  /* Time Control */
+  .time-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+  
+  .time-control label {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .large-slider {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .large-slider input[type=range] {
+    height: 8px;
+  }
+  
+  .year-display {
+    font-size: 2rem;
+    font-weight: bold;
+    background: rgba(255,255,255,0.1);
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    min-width: 80px;
+    text-align: center;
+    color: var(--accent-color, #ff6b6b);
+  }
+</style>
+
+<div id="i18n-data" style="display:none;" 
+  data-year="{translate('wealthYear')}"
+  data-initial="{translate('wealthLogInitial')}"
+  data-interest="{translate('wealthLogInterest')}"
+  data-wealthtax="{translate('wealthLogWealthTax')}"
+  data-paycheck="{translate('wealthLogPaycheck')}"
+  data-incometax="{translate('wealthLogIncomeTax')}"
+  data-welfare="{translate('wealthLogWelfare')}"
+  data-ratio="{translate('wealthLogRatio')}"
+></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // UI Elements
+    const logContainer = document.getElementById('logContainer') as HTMLDivElement;
+    const pieChart = document.getElementById('pieChart') as HTMLDivElement;
+    const labelWealthy = document.getElementById('labelWealthy') as HTMLSpanElement;
+    const labelWorker = document.getElementById('labelWorker') as HTMLSpanElement;
+    
+    // Controls
+    const inputs = {
+      initialWealthy: document.getElementById('initialWealthy') as HTMLInputElement,
+      initialWealthyNum: document.getElementById('initialWealthyNum') as HTMLInputElement,
+      wealthTax: document.getElementById('wealthTax') as HTMLInputElement,
+      wealthTaxNum: document.getElementById('wealthTaxNum') as HTMLInputElement,
+      paycheck: document.getElementById('paycheck') as HTMLInputElement,
+      paycheckNum: document.getElementById('paycheckNum') as HTMLInputElement,
+      incomeTax: document.getElementById('incomeTax') as HTMLInputElement,
+      incomeTaxNum: document.getElementById('incomeTaxNum') as HTMLInputElement,
+      yearSlider: document.getElementById('yearSlider') as HTMLInputElement,
+      currentYearDisplay: document.getElementById('currentYearDisplay') as HTMLSpanElement
+    };
+    
+    // i18n
+    const i18nData = (document.getElementById('i18n-data') as HTMLDivElement)?.dataset || {};
+    const t = (key: string, params: Record<string, any> = {}) => {
+      let str = i18nData[key] || "";
+      for (const [k, v] of Object.entries(params)) {
+        str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+      }
+      return str;
+    };
+
+    const formatNum = (num: number) => Number(num.toFixed(2));
+
+    interface State {
+      w: number;
+      k: number;
+      total: number;
+      wRatio: number;
+      kRatio: number;
+    }
+
+    interface Params {
+      initialWealthy: number;
+      wealthTax: number;
+      paycheck: number;
+      incomeTax: number;
+      targetYear: number;
+    }
+
+    // Simulation Engine
+    const simulateYear = (state: State, params: Params) => {
+      const logs: string[] = [];
+      
+      // 1. Interest
+      const wGrow = formatNum(state.w * 0.1);
+      const kGrow = formatNum(state.k * 0.1);
+      let w = formatNum(state.w + wGrow);
+      let k = formatNum(state.k + kGrow);
+      let total = formatNum(w + k);
+      logs.push(t('interest', { wealthy: w, worker: k, total: total }));
+      
+      // 2. Wealth Tax
+      const wTax = formatNum(w * (params.wealthTax / 100));
+      const kTax = formatNum(k * (params.wealthTax / 100));
+      w = formatNum(w - wTax);
+      k = formatNum(k - kTax);
+      const totalWealthTax = formatNum(wTax + kTax);
+      logs.push(t('wealthtax', { taxRate: params.wealthTax, wealthyTax: wTax, workerTax: kTax, wealthy: w, worker: k }));
+      
+      // 3. Paycheck
+      // Note: wealthy pays the worker
+      let actualPaycheck = params.paycheck;
+      if (w < actualPaycheck) {
+        // Can only pay what they have
+        actualPaycheck = w;
+      }
+      w = formatNum(w - actualPaycheck);
+      k = formatNum(k + actualPaycheck);
+      logs.push(t('paycheck', { paycheck: actualPaycheck, wealthy: w, worker: k }));
+      
+      // 4. Income Tax (paid by worker on the paycheck)
+      const incomeTax = formatNum(actualPaycheck * (params.incomeTax / 100));
+      k = formatNum(k - incomeTax);
+      logs.push(t('incometax', { taxRate: params.incomeTax, incomeTax: incomeTax, worker: k }));
+      
+      // 5. Social Welfare
+      const totalTax = formatNum(totalWealthTax + incomeTax);
+      const welfare = formatNum(totalTax / 2);
+      w = formatNum(w + welfare);
+      k = formatNum(k + welfare);
+      logs.push(t('welfare', { totalTax: totalTax, welfare: welfare, wealthy: w, worker: k }));
+      
+      // 6. Ratio
+      const finalTotal = formatNum(w + k);
+      const wRatio = finalTotal > 0 ? formatNum((w / finalTotal) * 100) : 0;
+      const kRatio = finalTotal > 0 ? formatNum((k / finalTotal) * 100) : 0;
+      logs.push(t('ratio', { wealthyRatio: wRatio, workerRatio: kRatio }));
+      
+      return { state: { w, k, total: finalTotal, wRatio, kRatio }, logs };
+    };
+
+    const runSimulation = () => {
+      const params: Params = {
+        initialWealthy: parseFloat(inputs.initialWealthy.value) || 0,
+        wealthTax: parseFloat(inputs.wealthTax.value) || 0,
+        paycheck: parseFloat(inputs.paycheck.value) || 0,
+        incomeTax: parseFloat(inputs.incomeTax.value) || 0,
+        targetYear: parseInt(inputs.yearSlider.value, 10) || 0
+      };
+      
+      let state: State = {
+        w: params.initialWealthy,
+        k: 100 - params.initialWealthy,
+        total: 100,
+        wRatio: params.initialWealthy,
+        kRatio: 100 - params.initialWealthy
+      };
+      
+      logContainer.innerHTML = '';
+      
+      // Initial state log
+      const initialDiv = document.createElement('div');
+      initialDiv.innerHTML = `<div class="log-year">${t('year', {year: 0})}</div>
+                              <div class="log-entry">${t('initial', {wealthy: state.w, worker: state.k, total: state.total})}</div>`;
+      logContainer.appendChild(initialDiv);
+
+      for (let y = 1; y <= params.targetYear; y++) {
+        const result = simulateYear(state, params);
+        state = result.state;
+        
+        const yearDiv = document.createElement('div');
+        yearDiv.innerHTML = `<div class="log-year">${t('year', {year: y})}</div>` +
+                            result.logs.map(l => `<div class="log-entry">${l}</div>`).join('');
+        logContainer.appendChild(yearDiv);
+      }
+
+      // Auto scroll to bottom
+      logContainer.scrollTop = logContainer.scrollHeight;
+      
+      // Update Pie Chart
+      pieChart.style.background = `conic-gradient(#ff4757 0% ${state.wRatio}%, #1e90ff ${state.wRatio}% 100%)`;
+      
+      // Update Labels
+      labelWealthy.innerText = `Wealthy: ${state.wRatio}% (${state.w})`;
+      labelWorker.innerText = `Worker: ${state.kRatio}% (${state.k})`;
+    };
+
+    // Setup Event Listeners for sync and update
+    const setupSync = (slider: HTMLInputElement, numInput: HTMLInputElement) => {
+      slider.addEventListener('input', (e: Event) => {
+        numInput.value = (e.target as HTMLInputElement).value;
+        runSimulation();
+      });
+      numInput.addEventListener('input', (e: Event) => {
+        slider.value = (e.target as HTMLInputElement).value;
+        runSimulation();
+      });
+    };
+
+    setupSync(inputs.initialWealthy, inputs.initialWealthyNum);
+    setupSync(inputs.wealthTax, inputs.wealthTaxNum);
+    setupSync(inputs.paycheck, inputs.paycheckNum);
+    setupSync(inputs.incomeTax, inputs.incomeTaxNum);
+    
+    inputs.yearSlider.addEventListener('input', (e: Event) => {
+      inputs.currentYearDisplay.innerText = (e.target as HTMLInputElement).value;
+      runSimulation();
+    });
+
+    // Initial Run
+    runSimulation();
+  });
+</script>

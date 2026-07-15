@@ -34,7 +34,24 @@ const zhDict = {
     cardSelfieTitle: "合影相机",
     cardSelfieDesc: "使用各种合影框和滤镜，与我拍一张纪念合影！",
     cardEmoticonsTitle: "表情仓库",
-    cardEmoticonsDesc: "收集了我的各种可爱表情包，点击可直接复制使用。"
+    cardEmoticonsDesc: "收集了我的各种可爱表情包，点击可直接复制使用。",
+    wealthTitle: "财富模拟器",
+    wealthDesc: "一个简单的财富分配模拟模型。",
+    wealthInitialWealthy: "富人初始财富比例 (%)",
+    wealthTaxRate: "财富税率 (%)",
+    wealthPaycheck: "工人薪水",
+    wealthIncomeTaxRate: "所得税率 (%)",
+    wealthYearLabel: "当前年份",
+    wealthYear: "第 {year} 年",
+    wealthLogInitial: "初始状态: 富人 {wealthy}, 工人 {worker} (总计 {total})",
+    wealthLogInterest: "1. 产生利息 (10%): 富人增加到 {wealthy}, 工人增加到 {worker} (总计 {total})",
+    wealthLogWealthTax: "2. 财富税 ({taxRate}%): 富人缴纳 {wealthyTax}, 工人缴纳 {workerTax}。剩余富人 {wealthy}, 工人 {worker}",
+    wealthLogPaycheck: "3. 薪水支付: 工人从富人处获得 {paycheck}。剩余富人 {wealthy}, 工人 {worker}",
+    wealthLogIncomeTax: "4. 所得税 ({taxRate}%): 工人缴纳 {incomeTax}。剩余工人 {worker}",
+    wealthLogWelfare: "5. 社会福利: 总税收 {totalTax}，每人获得 {welfare}。最终富人 {wealthy}, 工人 {worker}",
+    wealthLogRatio: "6. 新饼图比例: 富人 {wealthyRatio}%, 工人 {workerRatio}%",
+    cardWealthTitle: "财富模拟器",
+    cardWealthDesc: "通过简单的模型演示财富的分配与税收福利的影响。"
 };
 
 const enDict = {
@@ -66,7 +83,24 @@ const enDict = {
     cardSelfieTitle: "AR Camera",
     cardSelfieDesc: "Try on different camera overlays and filters to take screenshots and selfies!",
     cardEmoticonsTitle: "Emoticons",
-    cardEmoticonsDesc: "Cute character sticker collection. Click any emoticon to copy the image directly!"
+    cardEmoticonsDesc: "Cute character sticker collection. Click any emoticon to copy the image directly!",
+    wealthTitle: "Wealth Simulator",
+    wealthDesc: "A simple economic model simulation for wealth distribution.",
+    wealthInitialWealthy: "Initial Wealthy %",
+    wealthTaxRate: "Wealth Tax %",
+    wealthPaycheck: "Paycheck Amount",
+    wealthIncomeTaxRate: "Income Tax %",
+    wealthYearLabel: "Current Year",
+    wealthYear: "Year {year}",
+    wealthLogInitial: "Initial state: Wealthy {wealthy}, Worker {worker} (Total {total})",
+    wealthLogInterest: "1. Interest (10%): Wealthy grows to {wealthy}, Worker to {worker} (Total {total})",
+    wealthLogWealthTax: "2. Wealth Tax ({taxRate}%): Wealthy pays {wealthyTax}, Worker pays {workerTax}. Wealthy has {wealthy}, Worker has {worker}",
+    wealthLogPaycheck: "3. Paycheck: Worker receives {paycheck} from Wealthy. Wealthy has {wealthy}, Worker has {worker}",
+    wealthLogIncomeTax: "4. Income Tax ({taxRate}%): Worker pays {incomeTax}. Worker has {worker}",
+    wealthLogWelfare: "5. Social Welfare: Total tax {totalTax} split equally. Each gets {welfare}. Final Wealthy {wealthy}, Worker {worker}",
+    wealthLogRatio: "6. New Ratio: Wealthy {wealthyRatio}%, Worker {workerRatio}%",
+    cardWealthTitle: "Wealth Simulator",
+    cardWealthDesc: "An interactive simulation of wealth distribution, taxes, and welfare."
 };
 
 export const ui = {
