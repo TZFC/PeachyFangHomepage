@@ -48,6 +48,13 @@ const translate = useTranslations(lang);
             <input type="number" id="initialWealthyNum" min="0" max="100" value="80" />
           </div>
         </div>
+        <div class="control-group">
+          <label for="growthRate">{translate('wealthGrowthRate')}</label>
+          <div class="slider-row">
+            <input type="range" id="growthRate" min="0" max="100" value="10" step="1" />
+            <input type="number" id="growthRateNum" min="0" max="100" value="10" />
+          </div>
+        </div>
         
         <div class="control-group">
           <label for="wealthTax">{translate('wealthTaxRate')}</label>
@@ -60,8 +67,8 @@ const translate = useTranslations(lang);
         <div class="control-group">
           <label for="paycheck">{translate('wealthPaycheck')}</label>
           <div class="slider-row">
-            <input type="range" id="paycheck" min="0" max="50" value="2" step="0.5" />
-            <input type="number" id="paycheckNum" min="0" max="100" value="2" step="0.5" />
+            <input type="range" id="paycheck" min="0" max="10" value="2" step="0.1" />
+            <input type="number" id="paycheckNum" min="0" max="10" value="2" step="0.1" />
           </div>
         </div>
         
@@ -76,8 +83,8 @@ const translate = useTranslations(lang);
         <div class="control-group">
           <label for="expense">{translate('wealthExpense')}</label>
           <div class="slider-row">
-            <input type="range" id="expense" min="0" max="50" value="1" step="0.5" />
-            <input type="number" id="expenseNum" min="0" max="100" value="1" step="0.5" />
+            <input type="range" id="expense" min="0" max="10" value="1" step="0.1" />
+            <input type="number" id="expenseNum" min="0" max="10" value="1" step="0.1" />
           </div>
         </div>
       </div>
@@ -87,7 +94,7 @@ const translate = useTranslations(lang);
     <div class="time-control">
       <label for="yearSlider">{translate('wealthYearLabel')}</label>
       <div class="slider-row large-slider">
-        <input type="range" id="yearSlider" min="0" max="50" value="0" step="1" />
+        <input type="range" id="yearSlider" min="0" max="200" value="0" step="1" />
         <div class="year-display">
           <span id="currentYearDisplay">0</span>
         </div>
@@ -272,15 +279,15 @@ const translate = useTranslations(lang);
 </style>
 
 <div id="i18n-data" style="display:none;" 
-  data-year="{translate('wealthYear')}"
-  data-initial="{translate('wealthLogInitial')}"
-  data-interest="{translate('wealthLogInterest')}"
-  data-wealthtax="{translate('wealthLogWealthTax')}"
-  data-paycheck="{translate('wealthLogPaycheck')}"
-  data-incometax="{translate('wealthLogIncomeTax')}"
-  data-welfare="{translate('wealthLogWelfare')}"
-  data-ratio="{translate('wealthLogRatio')}"
-  data-expense="{translate('wealthLogExpense')}"
+  data-year={translate('wealthYear')}
+  data-initial={translate('wealthLogInitial')}
+  data-interest={translate('wealthLogInterest')}
+  data-wealthtax={translate('wealthLogWealthTax')}
+  data-paycheck={translate('wealthLogPaycheck')}
+  data-incometax={translate('wealthLogIncomeTax')}
+  data-welfare={translate('wealthLogWelfare')}
+  data-ratio={translate('wealthLogRatio')}
+  data-expense={translate('wealthLogExpense')}
 ></div>
 
 <script>
@@ -295,6 +302,8 @@ const translate = useTranslations(lang);
     const inputs = {
       initialWealthy: document.getElementById('initialWealthy') as HTMLInputElement,
       initialWealthyNum: document.getElementById('initialWealthyNum') as HTMLInputElement,
+      growthRate: document.getElementById('growthRate') as HTMLInputElement,
+      growthRateNum: document.getElementById('growthRateNum') as HTMLInputElement,
       wealthTax: document.getElementById('wealthTax') as HTMLInputElement,
       wealthTaxNum: document.getElementById('wealthTaxNum') as HTMLInputElement,
       paycheck: document.getElementById('paycheck') as HTMLInputElement,
@@ -329,6 +338,7 @@ const translate = useTranslations(lang);
 
     interface Params {
       initialWealthy: number;
+      growthRate: number;
       wealthTax: number;
       paycheck: number;
       incomeTax: number;
@@ -341,12 +351,12 @@ const translate = useTranslations(lang);
       const logs: string[] = [];
       
       // 1. Interest
-      const wGrow = formatNum(state.w * 0.1);
-      const kGrow = formatNum(state.k * 0.1);
+      const wGrow = formatNum(state.w * (params.growthRate / 100));
+      const kGrow = formatNum(state.k * (params.growthRate / 100));
       let w = formatNum(state.w + wGrow);
       let k = formatNum(state.k + kGrow);
       let total = formatNum(w + k);
-      logs.push(t('interest', { wealthy: w, worker: k, total: total }));
+      logs.push(t('interest', { growthRate: params.growthRate, wealthy: w, worker: k, total: total }));
       
       // 2. Wealth Tax
       const wTax = formatNum(w * (params.wealthTax / 100));
@@ -386,17 +396,22 @@ const translate = useTranslations(lang);
       logs.push(t('expense', { expense: expense, wealthy: w, worker: k }));
       
       // 7. Ratio
-      const finalTotal = formatNum(w + k);
-      const wRatio = finalTotal > 0 ? formatNum((w / finalTotal) * 100) : 0;
-      const kRatio = finalTotal > 0 ? formatNum((k / finalTotal) * 100) : 0;
+      const displayW = Math.max(0, w);
+      const displayK = Math.max(0, k);
+      const displayTotal = formatNum(displayW + displayK);
+      
+      const wRatio = displayTotal > 0 ? formatNum((displayW / displayTotal) * 100) : 0;
+      const kRatio = displayTotal > 0 ? formatNum((displayK / displayTotal) * 100) : 0;
       logs.push(t('ratio', { wealthyRatio: wRatio, workerRatio: kRatio }));
       
+      const finalTotal = formatNum(w + k);
       return { state: { w, k, total: finalTotal, wRatio, kRatio }, logs };
     };
 
     const runSimulation = () => {
       const params: Params = {
         initialWealthy: parseFloat(inputs.initialWealthy.value) || 0,
+        growthRate: parseFloat(inputs.growthRate.value) || 0,
         wealthTax: parseFloat(inputs.wealthTax.value) || 0,
         paycheck: parseFloat(inputs.paycheck.value) || 0,
         incomeTax: parseFloat(inputs.incomeTax.value) || 0,
@@ -434,7 +449,11 @@ const translate = useTranslations(lang);
       logContainer.scrollTop = logContainer.scrollHeight;
       
       // Update Pie Chart
-      pieChart.style.background = `conic-gradient(#ff4757 0% ${state.wRatio}%, #1e90ff ${state.wRatio}% 100%)`;
+      if (state.wRatio === 0 && state.kRatio === 0) {
+        pieChart.style.background = 'rgba(255, 255, 255, 0.1)';
+      } else {
+        pieChart.style.background = `conic-gradient(#ff4757 0% ${state.wRatio}%, #1e90ff ${state.wRatio}% 100%)`;
+      }
       
       // Update Labels
       labelWealthy.innerText = `Wealthy: ${state.wRatio}% (${state.w})`;
@@ -454,6 +473,7 @@ const translate = useTranslations(lang);
     };
 
     setupSync(inputs.initialWealthy, inputs.initialWealthyNum);
+    setupSync(inputs.growthRate, inputs.growthRateNum);
     setupSync(inputs.wealthTax, inputs.wealthTaxNum);
     setupSync(inputs.paycheck, inputs.paycheckNum);
     setupSync(inputs.incomeTax, inputs.incomeTaxNum);
