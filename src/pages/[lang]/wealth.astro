@@ -434,6 +434,46 @@ const translate = useTranslations(lang);
       return { state: { w, k, total: finalTotal, wRatio, kRatio, currentPaycheck, currentExpense }, logs };
     };
 
+    const STATE_KEY = 'wealthSimulationState';
+
+    // Load state from sessionStorage if available
+    const savedStateStr = sessionStorage.getItem(STATE_KEY);
+    if (savedStateStr) {
+      try {
+        const savedState = JSON.parse(savedStateStr);
+        if (savedState.initialWealthy !== undefined) {
+           inputs.initialWealthy.value = savedState.initialWealthy;
+           inputs.initialWealthyNum.value = savedState.initialWealthy;
+        }
+        if (savedState.growthRate !== undefined) {
+           inputs.growthRate.value = savedState.growthRate;
+           inputs.growthRateNum.value = savedState.growthRate;
+        }
+        if (savedState.wealthTax !== undefined) {
+           inputs.wealthTax.value = savedState.wealthTax;
+           inputs.wealthTaxNum.value = savedState.wealthTax;
+        }
+        if (savedState.paycheck !== undefined) {
+           inputs.paycheck.value = savedState.paycheck;
+           inputs.paycheckNum.value = savedState.paycheck;
+        }
+        if (savedState.incomeTax !== undefined) {
+           inputs.incomeTax.value = savedState.incomeTax;
+           inputs.incomeTaxNum.value = savedState.incomeTax;
+        }
+        if (savedState.expense !== undefined) {
+           inputs.expense.value = savedState.expense;
+           inputs.expenseNum.value = savedState.expense;
+        }
+        if (savedState.targetYear !== undefined) {
+           inputs.yearSlider.value = savedState.targetYear;
+           inputs.yearNum.value = savedState.targetYear;
+        }
+      } catch (e) {
+        console.error("Failed to parse saved state", e);
+      }
+    }
+
     const runSimulation = () => {
       const params: Params = {
         initialWealthy: parseFloat(inputs.initialWealthy.value) || 0,
@@ -444,6 +484,8 @@ const translate = useTranslations(lang);
         expense: parseFloat(inputs.expense.value) || 0,
         targetYear: parseInt(inputs.yearSlider.value, 10) || 0
       };
+      
+      sessionStorage.setItem(STATE_KEY, JSON.stringify(params));
       
       let state: State = {
         w: params.initialWealthy,
