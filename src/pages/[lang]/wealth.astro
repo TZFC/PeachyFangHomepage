@@ -123,6 +123,30 @@ const translate = useTranslations(lang);
     .wealth-layout {
       grid-template-columns: 1fr;
     }
+    
+    .wealth-pie-container {
+      position: sticky;
+      top: 1rem;
+      z-index: 10;
+      height: auto;
+      padding: 1.5rem;
+      background: rgba(30, 30, 30, 0.7);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .pie-chart {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .pie-labels {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      gap: 1rem;
+    }
   }
 
   /* Logs Panel */
