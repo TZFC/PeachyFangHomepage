@@ -345,6 +345,8 @@ const translate = useTranslations(lang);
       total: number;
       wRatio: number;
       kRatio: number;
+      currentPaycheck: number;
+      currentExpense: number;
     }
 
     interface Params {
@@ -362,11 +364,16 @@ const translate = useTranslations(lang);
       const logs: string[] = [];
       
       // 1. Interest
+      const growthMult = 1 + (params.growthRate / 100);
       const wGrow = formatNum(state.w * (params.growthRate / 100));
       const kGrow = formatNum(state.k * (params.growthRate / 100));
       let w = formatNum(state.w + wGrow);
       let k = formatNum(state.k + kGrow);
       let total = formatNum(w + k);
+      
+      let currentPaycheck = formatNum(state.currentPaycheck * growthMult);
+      let currentExpense = formatNum(state.currentExpense * growthMult);
+      
       logs.push(t('interest', { growthRate: params.growthRate, wealthy: w, worker: k, total: total }));
       
       // 2. Wealth Tax
@@ -379,7 +386,7 @@ const translate = useTranslations(lang);
       
       // 3. Paycheck
       // Note: wealthy pays the worker
-      let actualPaycheck = params.paycheck;
+      let actualPaycheck = currentPaycheck;
       if (w < actualPaycheck) {
         // Can only pay what they have
         actualPaycheck = w;
@@ -401,7 +408,7 @@ const translate = useTranslations(lang);
       logs.push(t('welfare', { totalTax: totalTax, welfare: welfare, wealthy: w, worker: k }));
       
       // 6. Living Expense (Step 7 in user prompt context)
-      const expense = params.expense;
+      const expense = currentExpense;
       w = formatNum(w - expense);
       k = formatNum(k - expense);
       logs.push(t('expense', { expense: expense, wealthy: w, worker: k }));
@@ -424,7 +431,7 @@ const translate = useTranslations(lang);
       logs.push(t('ratio', { macroTotal: macroTotal, wealthyRatio: wRatio, workerRatio: kRatio, wealthy: w, worker: k }));
       
       const finalTotal = formatNum(w + k);
-      return { state: { w, k, total: finalTotal, wRatio, kRatio }, logs };
+      return { state: { w, k, total: finalTotal, wRatio, kRatio, currentPaycheck, currentExpense }, logs };
     };
 
     const runSimulation = () => {
@@ -443,7 +450,9 @@ const translate = useTranslations(lang);
         k: 100 - params.initialWealthy,
         total: 100,
         wRatio: params.initialWealthy,
-        kRatio: 100 - params.initialWealthy
+        kRatio: 100 - params.initialWealthy,
+        currentPaycheck: params.paycheck,
+        currentExpense: params.expense
       };
       
       logContainer.innerHTML = '';
